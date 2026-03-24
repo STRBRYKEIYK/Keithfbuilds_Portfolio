@@ -34,26 +34,13 @@ export default function Contact() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setSending(true);
-    try {
-      const res = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formState),
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "Send failed");
-      }
-      setSent(true);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send message. Please try again later.");
-    } finally {
+    setTimeout(() => {
       setSending(false);
-    }
+      setSent(true);
+    }, 1800);
   };
 
   const links = [
