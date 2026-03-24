@@ -357,24 +357,24 @@ export default function Hero() {
           display: block;
           z-index: 2;
 
-          /* scanlines */
-          background: repeating-linear-gradient(
-            0deg,
-            transparent 0px,
-            transparent 3px,
-            rgba(5, 10, 7, 0.18) 3px,
-            rgba(5, 10, 7, 0.18) 4px
-          ), linear-gradient(
-            to bottom,
-            transparent 0%,
-            rgba(22, 193, 114, 0.055) 40%,
-            rgba(22, 193, 114, 0.09) 50%,
-            rgba(22, 193, 114, 0.055) 60%,
-            transparent 100%
-          );
-          background-repeat: no-repeat, no-repeat;
-          background-size: 100% 100%, 100% 28%;
-          background-position: 0 0, 0 -40%;
+          /* inherit text metrics so the pseudo-element matches the original */
+          font-family: inherit;
+          font-size: inherit;
+          font-weight: inherit;
+          line-height: inherit;
+          letter-spacing: inherit;
+
+          /* scanlines + variation + moving band */
+          background:
+            /* fine thin lines */
+            repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(5,10,7,0.16) 2px, rgba(5,10,7,0.16) 3px),
+            /* occasional thicker line pattern */
+            repeating-linear-gradient(0deg, transparent 0px, transparent 6px, rgba(5,10,7,0.08) 6px, rgba(5,10,7,0.08) 8px),
+            /* moving bright band */
+            linear-gradient(to bottom, transparent 0%, rgba(22,193,114,0.06) 30%, rgba(22,193,114,0.16) 50%, rgba(22,193,114,0.06) 70%, transparent 100%);
+          background-repeat: repeat, repeat, no-repeat;
+          background-size: 100% 100%, 100% 100%, 100% 26%;
+          background-position: 0 0, 0 0, 0 -30%;
           animation: scanSweep 3.5s linear infinite;
 
           /* clip background to text glyphs */
@@ -394,8 +394,8 @@ export default function Hero() {
         }
 
         @keyframes scanSweep {
-          0%   { top: -30%; }
-          100% { top: 115%; }
+          0%   { background-position: 0 0, 0 -40%; }
+          100% { background-position: 0 0, 0 115%; }
         }
 
         @keyframes nameFlicker {
@@ -571,6 +571,43 @@ export default function Hero() {
         }
       `}</style>
 
+      {/* SVG filter for scanline distortion (keeps layout intact) */}
+      <svg
+        aria-hidden="true"
+        style={{ position: "absolute", width: 0, height: 0 }}
+      >
+        <filter
+          id="scan-distort"
+          x="-20%"
+          y="-30%"
+          width="140%"
+          height="160%"
+          filterUnits="objectBoundingBox"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.02"
+            numOctaves="2"
+            seed="8"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="8"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          >
+            <animate
+              attributeName="scale"
+              values="6;18;6"
+              dur="3.5s"
+              repeatCount="indefinite"
+            />
+          </feDisplacementMap>
+        </filter>
+      </svg>
+
       <section className="hero">
         <canvas ref={canvasRef} className="hero-canvas" />
         <div className="hero-glow" />
@@ -584,17 +621,17 @@ export default function Hero() {
           {/* Name wrapped with scanline overlay */}
           <div className="hero-name-wrap">
             <h1 className="hero-name" data-text={scrambledName}>
-                {scrambledName.split(" ").map((word, wi) => (
-                  <span key={wi}>
-                    {word === highlightWord ? (
-                      <span className="highlight">{word}</span>
-                    ) : (
-                      word
-                    )}
-                    {wi < scrambledName.split(" ").length - 1 ? " " : ""}
-                  </span>
-                ))}
-              </h1>
+              {scrambledName.split(" ").map((word, wi) => (
+                <span key={wi}>
+                  {word === highlightWord ? (
+                    <span className="highlight">{word}</span>
+                  ) : (
+                    word
+                  )}
+                  {wi < scrambledName.split(" ").length - 1 ? " " : ""}
+                </span>
+              ))}
+            </h1>
           </div>
 
           <div className="hero-role-wrap">
