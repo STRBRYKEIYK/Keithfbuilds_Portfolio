@@ -1,57 +1,87 @@
-import { useEffect, useRef, useState } from 'react'
-import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaGithub, FaCheckCircle } from 'react-icons/fa'
+import { useEffect, useRef, useState } from "react";
+import {
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaGithub,
+  FaCheckCircle,
+} from "react-icons/fa";
 
 export default function Contact() {
-  const sectionRef = useRef(null)
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' })
-  const [sending, setSending] = useState(false)
-  const [sent, setSent] = useState(false)
+  const sectionRef = useRef(null);
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.querySelectorAll('[data-reveal]').forEach((el, i) => {
-              setTimeout(() => el.classList.add('visible'), i * 100)
-            })
+            entry.target.querySelectorAll("[data-reveal]").forEach((el, i) => {
+              setTimeout(() => el.classList.add("visible"), i * 100);
+            });
           }
-        })
+        });
       },
-      { threshold: 0.1 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
+      { threshold: 0.1 },
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setSending(true)
+    e.preventDefault();
+    setSending(true);
     try {
-      const res = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formState),
-      })
+      });
       if (!res.ok) {
-        const txt = await res.text()
-        throw new Error(txt || 'Send failed')
+        const txt = await res.text();
+        throw new Error(txt || "Send failed");
       }
-      setSent(true)
+      setSent(true);
     } catch (err) {
-      console.error(err)
-      alert('Failed to send message. Please try again later.')
+      console.error(err);
+      alert("Failed to send message. Please try again later.");
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
   const links = [
-    { label: 'Email', value: 'keithfelipe024@gmail.com', href: 'mailto:keithfelipe024@gmail.com', icon: <FaEnvelope /> },
-    { label: 'Phone', value: '+63 921 605 4768', href: 'tel:+639216054768', icon: <FaPhoneAlt /> },
-    { label: 'Location', value: 'Antipolo, Rizal PH', href: null, icon: <FaMapMarkerAlt /> },
-    { label: 'Github', value: 'STRBRYKEIYK', href: 'https://github.com/STRBRYKEIYK', icon: <FaGithub /> },
-  ]
+    {
+      label: "Email",
+      value: "keithfelipe024@gmail.com",
+      href: "mailto:keithfelipe024@gmail.com",
+      icon: <FaEnvelope />,
+    },
+    {
+      label: "Phone",
+      value: "+63 921 605 4768",
+      href: "tel:+639216054768",
+      icon: <FaPhoneAlt />,
+    },
+    {
+      label: "Location",
+      value: "Antipolo, Rizal PH",
+      href: null,
+      icon: <FaMapMarkerAlt />,
+    },
+    {
+      label: "Github",
+      value: "STRBRYKEIYK",
+      href: "https://github.com/STRBRYKEIYK",
+      icon: <FaGithub />,
+    },
+  ];
 
   return (
     <>
@@ -260,27 +290,49 @@ export default function Contact() {
       <section id="contact" className="contact" ref={sectionRef}>
         <div className="contact-inner">
           <div className="contact-left">
-            <div className="contact-section-label reveal" data-reveal>Get In Touch</div>
+            <div className="contact-section-label reveal" data-reveal>
+              Get In Touch
+            </div>
             <h2 className="contact-heading reveal" data-reveal>
-              Let's build<br />something <em>great</em>
+              Let's build
+              <br />
+              something <em>great</em>
             </h2>
             <p className="contact-desc reveal" data-reveal>
-              I'm open to remote full-time roles, freelance projects, and long-term collaborations. If you need a developer who ships enterprise-quality work — let's talk.
+              I'm open to remote full-time roles, freelance projects, and
+              long-term collaborations. If you need a developer who ships
+              enterprise-quality work — let's talk.
             </p>
 
             <div className="contact-links">
               {links.map((link, i) => (
-                <div key={link.label} className="reveal" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
+                <div
+                  key={link.label}
+                  className="reveal"
+                  data-reveal
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
                   {link.href ? (
-                    <a href={link.href} className="contact-link-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 18, color: '#16C172' }}>{link.icon}</span>
+                    <a
+                      href={link.href}
+                      className="contact-link-row"
+                      style={{ display: "flex", alignItems: "center", gap: 10 }}
+                    >
+                      <span style={{ fontSize: 18, color: "#16C172" }}>
+                        {link.icon}
+                      </span>
                       <span className="contact-link-label">{link.label}</span>
                       <span className="contact-link-value">{link.value}</span>
                       <span className="contact-link-arrow">→</span>
                     </a>
                   ) : (
-                    <div className="contact-link-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 18, color: '#16C172' }}>{link.icon}</span>
+                    <div
+                      className="contact-link-row"
+                      style={{ display: "flex", alignItems: "center", gap: 10 }}
+                    >
+                      <span style={{ fontSize: 18, color: "#16C172" }}>
+                        {link.icon}
+                      </span>
                       <span className="contact-link-label">{link.label}</span>
                       <span className="contact-link-value">{link.value}</span>
                     </div>
@@ -290,12 +342,20 @@ export default function Contact() {
             </div>
           </div>
 
-          <div className="reveal" data-reveal style={{ transitionDelay: '200ms' }}>
+          <div
+            className="reveal"
+            data-reveal
+            style={{ transitionDelay: "200ms" }}
+          >
             {sent ? (
               <div className="sent-msg">
-                <div className="sent-icon"><FaCheckCircle color="#16C172" /></div>
+                <div className="sent-icon">
+                  <FaCheckCircle color="#16C172" />
+                </div>
                 <div className="sent-title">Message Sent!</div>
-                <p className="sent-sub">Thanks for reaching out. I'll get back to you soon.</p>
+                <p className="sent-sub">
+                  Thanks for reaching out. I'll get back to you soon.
+                </p>
               </div>
             ) : (
               <form className="contact-form" onSubmit={handleSubmit}>
@@ -307,7 +367,9 @@ export default function Contact() {
                     placeholder="John Doe"
                     required
                     value={formState.name}
-                    onChange={e => setFormState(s => ({ ...s, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormState((s) => ({ ...s, name: e.target.value }))
+                    }
                   />
                 </div>
                 <div className="form-group">
@@ -318,7 +380,9 @@ export default function Contact() {
                     placeholder="hello@company.com"
                     required
                     value={formState.email}
-                    onChange={e => setFormState(s => ({ ...s, email: e.target.value }))}
+                    onChange={(e) =>
+                      setFormState((s) => ({ ...s, email: e.target.value }))
+                    }
                   />
                 </div>
                 <div className="form-group">
@@ -328,11 +392,17 @@ export default function Contact() {
                     placeholder="Tell me about your project or opportunity..."
                     required
                     value={formState.message}
-                    onChange={e => setFormState(s => ({ ...s, message: e.target.value }))}
+                    onChange={(e) =>
+                      setFormState((s) => ({ ...s, message: e.target.value }))
+                    }
                   />
                 </div>
-                <button className="form-submit" type="submit" disabled={sending}>
-                  {sending ? 'Sending...' : 'Send Message →'}
+                <button
+                  className="form-submit"
+                  type="submit"
+                  disabled={sending}
+                >
+                  {sending ? "Sending..." : "Send Message →"}
                 </button>
               </form>
             )}
@@ -340,5 +410,5 @@ export default function Contact() {
         </div>
       </section>
     </>
-  )
+  );
 }
