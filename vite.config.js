@@ -1,12 +1,13 @@
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import obfuscator from 'vite-plugin-obfuscator' 
+import obfuscatorPkg from 'vite-plugin-obfuscator'
+
+const obfuscator = obfuscatorPkg.default ?? obfuscatorPkg
+
 export default defineConfig({
   plugins: [
     react(),
     obfuscator({
-      // You can customize options below. These are strong but safe defaults:
       compact: true,
       controlFlowFlattening: true,
       deadCodeInjection: true,
@@ -17,5 +18,5 @@ export default defineConfig({
       selfDefending: true,
       disableConsoleOutput: true,
     })
-  ], 
+  ],
 })
