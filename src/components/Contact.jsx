@@ -24,13 +24,26 @@ export default function Contact() {
     return () => observer.disconnect()
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setSending(true)
-    setTimeout(() => {
-      setSending(false)
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formState),
+      })
+      if (!res.ok) {
+        const txt = await res.text()
+        throw new Error(txt || 'Send failed')
+      }
       setSent(true)
-    }, 1800)
+    } catch (err) {
+      console.error(err)
+      alert('Failed to send message. Please try again later.')
+    } finally {
+      setSending(false)
+    }
   }
 
   const links = [
