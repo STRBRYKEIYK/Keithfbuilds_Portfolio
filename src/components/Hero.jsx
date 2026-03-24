@@ -1,3 +1,11 @@
+// Helper to get the correct suffix (ST, ND, RD, TH)
+function getOrdinalAge(n) {
+  const j = n % 10, k = n % 100;
+  if (j === 1 && k !== 11) return n + "ST";
+  if (j === 2 && k !== 12) return n + "ND";
+  if (j === 3 && k !== 13) return n + "RD";
+  return n + "TH";
+}
 import { useEffect, useRef, useState } from 'react'
 
 const ROLES = [
@@ -31,36 +39,37 @@ function useRoleCLIAnimation(roles) {
     return () => clearInterval(blink)
   }, [])
 
+  // Set scrambledTarget only when entering 'typeScrambled' phase or roleIndex changes
+  useEffect(() => {
+    if (phase === 'typeScrambled') {
+      setScrambledTarget(shuffle(roles[roleIndex]))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, roleIndex])
+
   // Animation phases
   useEffect(() => {
     let timeout
     const role = roles[roleIndex]
     if (phase === 'typeScrambled') {
-      // On phase start, pick a new scrambled target
-      if (display.length === 0) {
-        setScrambledTarget(shuffle(role))
-      }
       // Type out the scrambled string, one char at a time
-      if (display.length < role.length) {
+      if (display.length < role.length && scrambledTarget) {
         timeout = setTimeout(() => {
           setDisplay(scrambledTarget.slice(0, display.length + 1))
         }, 60)
-      } else {
+      } else if (display.length === role.length) {
         timeout = setTimeout(() => setPhase('unscramble'), 400)
       }
     } else if (phase === 'unscramble') {
       // Animate scramble to correct order
       if (display !== role) {
-        // Animate: for each char, if not correct, replace with correct or random
         timeout = setTimeout(() => {
           setDisplay(prev => {
             let arr = prev.split('')
-            let changed = false
             for (let i = 0; i < arr.length; i++) {
               if (arr[i] !== role[i]) {
                 // 50% chance to snap to correct, else random
                 arr[i] = Math.random() < 0.5 ? role[i] : CHARS[Math.floor(Math.random() * CHARS.length)]
-                changed = true
               }
             }
             return arr.join('')
@@ -131,12 +140,25 @@ function useScramble(finalText, trigger) {
 }
 
 export default function Hero() {
+
   const [mounted, setMounted] = useState(false)
   const [scrambleNameTrigger, setScrambleNameTrigger] = useState(false)
   const canvasRef = useRef(null)
 
+  // --- EASTER EGG LOGIC ---
+  const today = new Date()
+  // getMonth() is 0-indexed, so 3 is April
+  const isBirthday = today.getMonth() === 3 && today.getDate() === 24
+  //const isBirthday = true // Force birthday mode for testing
+  const age = today.getFullYear() - 2002
+  const targetText = isBirthday
+    ? `HAPPY ${getOrdinalAge(age)} BIRTHDAY KEITH`
+    : 'KEITH WILHELM FELIPE'
+  // Dynamically change which word gets the neon green highlight
+  const highlightWord = isBirthday ? 'KEITH' : 'FELIPE'
+
   // Scramble name when trigger is true
-  const scrambledName = useScramble('KEITH WILHELM FELIPE', scrambleNameTrigger)
+  const scrambledName = useScramble(targetText, scrambleNameTrigger)
   // CLI-style role animation
   const roleCLI = useRoleCLIAnimation(ROLES)
 
@@ -475,7 +497,8 @@ export default function Hero() {
           <h1 className="hero-name">
             {scrambledName.split(' ').map((word, wi) => (
               <span key={wi}>
-                {word === 'FELIPE' ? <span className="highlight">{word}</span> : word}
+                {/* Dynamically highlight based on the date */}
+                {word === highlightWord ? <span className="highlight">{word}</span> : word}
                 {wi < scrambledName.split(' ').length - 1 ? ' ' : ''}
               </span>
             ))}
