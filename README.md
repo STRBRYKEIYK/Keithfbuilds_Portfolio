@@ -5,10 +5,41 @@ Built with Vite + React + TypeScript + Tailwind CSS
 
 ---
 
+## ✨ Features
+
+- ⚡ Vite + React 18 + TypeScript
+- 🎨 Tailwind CSS with custom design system
+- 🖱️ Custom cursor (desktop)
+- 📊 Animated skill bars with Intersection Observer
+- ⌨️ Typing animation in hero (multi-role cycle)
+- 🌐 Canvas particle network background
+- 📱 Fully responsive (mobile-first)
+- 🌙 Dark theme with green accent system
+- 🔢 Scroll progress bar
+- 📦 Expandable project cards
+- 🚀 PWA-ready structure
+- 🔒 Security headers ready
+
+---
+
+## 🛠️ Tech Stack
+
+| Tool | Purpose |
+|------|---------|
+| Vite 5 | Build tool |
+| React 18 | UI framework |
+| TypeScript | Type safety |
+| Tailwind CSS | Styling |
+| Framer Motion | (available, optional) |
+| react-icons | Icon library |
+| react-intersection-observer | Scroll animations |
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### 1. Install dependencies
@@ -62,6 +93,49 @@ portfolio/
 
 ---
 
+## 🎨 Customization
+
+### Update personal info
+Edit these files:
+- `src/components/Hero.tsx` — name, tagline, social links
+- `src/components/About.tsx` — bio, quick facts, stats
+- `src/components/Contact.tsx` — email, location, social links
+- `src/components/Footer.tsx` — footer text
+
+### Add your photo
+Place your photo in `public/` as `avatar.jpg`, then in `Hero.tsx` replace the canvas section or add an `<img>` tag.
+
+### Add resume PDF
+Place your PDF in `public/` as `Keith_Wilhelm_Felipe_Resume.pdf`.
+The Resume download button in the navbar will work automatically.
+
+### Change color accent
+In `src/index.css`, update:
+```css
+--emerald: #10b981;  /* Change to any color */
+```
+
+---
+
+## 📬 Contact Form
+
+The contact form uses `mailto:` as a fallback (no backend needed).
+For a real form submission, integrate:
+- [Formspree](https://formspree.io) — free, easy
+- [EmailJS](https://emailjs.com) — client-side email
+- Replace the `handleSubmit` in `Contact.tsx`
+
+**Formspree example:**
+```tsx
+const response = await fetch('https://formspree.io/f/YOUR_ID', {
+  method: 'POST',
+  body: JSON.stringify(form),
+  headers: { 'Content-Type': 'application/json' },
+})
+```
+
+---
+
 ## 🌐 Deploying to keithfbuilds.dev via Porkbun
 
 ### Option A — Cloudflare Pages (Recommended, Free)
@@ -74,8 +148,7 @@ portfolio/
    - **Framework preset**: Vite
    - **Build command**: `npm run build`
    - **Output directory**: `dist`
-6. Deploy!
-7. You'll get a `*.pages.dev` URL
+6. Deploy — you'll get a `*.pages.dev` URL
 
 **Connect your Porkbun domain:**
 1. In Cloudflare Pages → your project → **Custom Domains**
@@ -105,80 +178,6 @@ portfolio/
 3. Go to your domain → **Static Hosting**
 4. Upload the contents of the `dist/` folder
 5. Enable SSL in Porkbun dashboard
-
----
-
-## 🎨 Customization
-
-### Update personal info
-Edit these files:
-- `src/components/Hero.tsx` — name, tagline, social links
-- `src/components/About.tsx` — bio, quick facts, stats
-- `src/components/Contact.tsx` — email, location, social links
-- `src/components/Footer.tsx` — footer text
-
-### Add your photo
-Place your photo in `public/` as `avatar.jpg`, then in `Hero.tsx` replace the canvas section or add an `<img>` tag.
-
-### Add resume PDF
-Place your PDF in `public/` as `Keith_Wilhelm_Felipe_Resume.pdf`
-The Resume download button in the navbar will work automatically.
-
-### Change color accent
-In `src/index.css`, update:
-```css
---emerald: #10b981;  /* Change to any color */
-```
-
----
-
-## ✨ Features
-
-- ⚡ Vite + React 18 + TypeScript
-- 🎨 Tailwind CSS with custom design system
-- 🖱️ Custom cursor (desktop)
-- 📊 Animated skill bars with Intersection Observer
-- ⌨️ Typing animation in hero (multi-role cycle)
-- 🌐 Canvas particle network background
-- 📱 Fully responsive (mobile-first)
-- 🌙 Dark theme with green accent system
-- 🔢 Scroll progress bar
-- 📦 Expandable project cards
-- 🚀 PWA-ready structure
-- 🔒 Security headers ready
-
----
-
-## 📬 Contact Form
-
-The contact form uses `mailto:` as a fallback (no backend needed).
-For a real form submission, integrate:
-- [Formspree](https://formspree.io) — free, easy
-- [EmailJS](https://emailjs.com) — client-side email
-- Replace the `handleSubmit` in `Contact.tsx`
-
-**Formspree example:**
-```tsx
-const response = await fetch('https://formspree.io/f/YOUR_ID', {
-  method: 'POST',
-  body: JSON.stringify(form),
-  headers: { 'Content-Type': 'application/json' },
-})
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Tool | Purpose |
-|------|---------|
-| Vite 5 | Build tool |
-| React 18 | UI framework |
-| TypeScript | Type safety |
-| Tailwind CSS | Styling |
-| Framer Motion | (available, optional) |
-| react-icons | Icon library |
-| react-intersection-observer | Scroll animations |
 
 ---
 
