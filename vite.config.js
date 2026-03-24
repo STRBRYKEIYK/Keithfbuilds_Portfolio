@@ -1,7 +1,7 @@
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import obfuscator from 'vite-plugin-obfuscator'
+import obfuscator from 'vite-plugin-obfuscator' 
 export default defineConfig({
   plugins: [
     react(),
