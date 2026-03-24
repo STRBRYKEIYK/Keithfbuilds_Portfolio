@@ -1,241 +1,248 @@
 // Helper to get the correct suffix (ST, ND, RD, TH)
 function getOrdinalAge(n) {
-  const j = n % 10, k = n % 100;
+  const j = n % 10,
+    k = n % 100;
   if (j === 1 && k !== 11) return n + "ST";
   if (j === 2 && k !== 12) return n + "ND";
   if (j === 3 && k !== 13) return n + "RD";
   return n + "TH";
 }
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 
 const ROLES = [
-  'Full-Stack Developer',
-  'React Specialist',
-  'Enterprise Systems Builder',
-  'Remote-Ready Engineer',
-]
+  "Full-Stack Developer",
+  "React Specialist",
+  "Enterprise Systems Builder",
+  "Remote-Ready Engineer",
+];
 
 // CLI-style role animation: scramble, type, display, delete, repeat
 function useRoleCLIAnimation(roles) {
-  const [roleIndex, setRoleIndex] = useState(0)
-  const [phase, setPhase] = useState('typeScrambled') // 'typeScrambled' | 'unscramble' | 'delete'
-  const [display, setDisplay] = useState('')
-  const [caretVisible, setCaretVisible] = useState(true)
-  const [scrambledTarget, setScrambledTarget] = useState('')
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [phase, setPhase] = useState("typeScrambled"); // 'typeScrambled' | 'unscramble' | 'delete'
+  const [display, setDisplay] = useState("");
+  const [caretVisible, setCaretVisible] = useState(true);
+  const [scrambledTarget, setScrambledTarget] = useState("");
 
   // Scramble: shuffle the role's letters
   function shuffle(str) {
-    const arr = str.split('')
+    const arr = str.split("");
     for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    return arr.join('')
+    return arr.join("");
   }
 
   // Blinking caret
   useEffect(() => {
-    const blink = setInterval(() => setCaretVisible(v => !v), 500)
-    return () => clearInterval(blink)
-  }, [])
+    const blink = setInterval(() => setCaretVisible((v) => !v), 500);
+    return () => clearInterval(blink);
+  }, []);
 
   // Set scrambledTarget only when entering 'typeScrambled' phase or roleIndex changes
   useEffect(() => {
-    if (phase === 'typeScrambled') {
-      setScrambledTarget(shuffle(roles[roleIndex]))
+    if (phase === "typeScrambled") {
+      setScrambledTarget(shuffle(roles[roleIndex]));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, roleIndex])
+  }, [phase, roleIndex]);
 
   // Animation phases
   useEffect(() => {
-    let timeout
-    const role = roles[roleIndex]
-    if (phase === 'typeScrambled') {
+    let timeout;
+    const role = roles[roleIndex];
+    if (phase === "typeScrambled") {
       // Type out the scrambled string, one char at a time
       if (display.length < role.length && scrambledTarget) {
         timeout = setTimeout(() => {
-          setDisplay(scrambledTarget.slice(0, display.length + 1))
-        }, 60)
+          setDisplay(scrambledTarget.slice(0, display.length + 1));
+        }, 60);
       } else if (display.length === role.length) {
-        timeout = setTimeout(() => setPhase('unscramble'), 400)
+        timeout = setTimeout(() => setPhase("unscramble"), 400);
       }
-    } else if (phase === 'unscramble') {
+    } else if (phase === "unscramble") {
       // Animate scramble to correct order
       if (display !== role) {
         timeout = setTimeout(() => {
-          setDisplay(prev => {
-            let arr = prev.split('')
+          setDisplay((prev) => {
+            let arr = prev.split("");
             for (let i = 0; i < arr.length; i++) {
               if (arr[i] !== role[i]) {
                 // 50% chance to snap to correct, else random
-                arr[i] = Math.random() < 0.5 ? role[i] : CHARS[Math.floor(Math.random() * CHARS.length)]
+                arr[i] =
+                  Math.random() < 0.5
+                    ? role[i]
+                    : CHARS[Math.floor(Math.random() * CHARS.length)];
               }
             }
-            return arr.join('')
-          })
-        }, 40)
+            return arr.join("");
+          });
+        }, 40);
       } else {
-        timeout = setTimeout(() => setPhase('delete'), 1000)
+        timeout = setTimeout(() => setPhase("delete"), 1000);
       }
-    } else if (phase === 'delete') {
+    } else if (phase === "delete") {
       if (display.length > 0) {
-        timeout = setTimeout(() => setDisplay(d => d.slice(0, -1)), 35)
+        timeout = setTimeout(() => setDisplay((d) => d.slice(0, -1)), 35);
       } else {
         timeout = setTimeout(() => {
-          setRoleIndex(i => (i + 1) % roles.length)
-          setPhase('typeScrambled')
-        }, 300)
+          setRoleIndex((i) => (i + 1) % roles.length);
+          setPhase("typeScrambled");
+        }, 300);
       }
     }
-    return () => clearTimeout(timeout)
-  }, [phase, display, roleIndex, roles, scrambledTarget])
+    return () => clearTimeout(timeout);
+  }, [phase, display, roleIndex, roles, scrambledTarget]);
 
   // When roleIndex or phase resets, clear display
   useEffect(() => {
-    if (phase === 'typeScrambled') setDisplay('')
-  }, [roleIndex, phase])
+    if (phase === "typeScrambled") setDisplay("");
+  }, [roleIndex, phase]);
 
   return {
     text: display,
     caret: caretVisible,
     phase,
-  }
+  };
 }
 
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%'
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%";
 
 function useScramble(finalText, trigger) {
-  const [display, setDisplay] = useState(finalText)
-  const iteration = useRef(0)
-  const interval = useRef(null)
+  const [display, setDisplay] = useState(finalText);
+  const iteration = useRef(0);
+  const interval = useRef(null);
 
   useEffect(() => {
-    if (!trigger) return
-    iteration.current = 0
-    clearInterval(interval.current)
+    if (!trigger) return;
+    iteration.current = 0;
+    clearInterval(interval.current);
 
     interval.current = setInterval(() => {
       setDisplay(
         finalText
-          .split('')
+          .split("")
           .map((char, i) => {
-            if (i < iteration.current) return finalText[i]
-            if (char === ' ') return ' '
-            return CHARS[Math.floor(Math.random() * CHARS.length)]
+            if (i < iteration.current) return finalText[i];
+            if (char === " ") return " ";
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
           })
-          .join('')
-      )
-      iteration.current += 0.5
+          .join(""),
+      );
+      iteration.current += 0.5;
       if (iteration.current >= finalText.length) {
-        clearInterval(interval.current)
-        setDisplay(finalText)
+        clearInterval(interval.current);
+        setDisplay(finalText);
       }
-    }, 30)
+    }, 30);
 
-    return () => clearInterval(interval.current)
-  }, [finalText, trigger])
+    return () => clearInterval(interval.current);
+  }, [finalText, trigger]);
 
-  return display
+  return display;
 }
 
 export default function Hero() {
-
-  const [mounted, setMounted] = useState(false)
-  const [scrambleNameTrigger, setScrambleNameTrigger] = useState(false)
-  const canvasRef = useRef(null)
+  const [mounted, setMounted] = useState(false);
+  const [scrambleNameTrigger, setScrambleNameTrigger] = useState(false);
+  const canvasRef = useRef(null);
 
   // --- EASTER EGG LOGIC ---
-  const today = new Date()
+  const today = new Date();
   // getMonth() is 0-indexed, so 3 is April
-  const isBirthday = today.getMonth() === 3 && today.getDate() === 24
+  const isBirthday = today.getMonth() === 3 && today.getDate() === 24;
   //const isBirthday = true // Force birthday mode for testing
-  const age = today.getFullYear() - 2002
+  const age = today.getFullYear() - 2002;
   const targetText = isBirthday
     ? `HAPPY ${getOrdinalAge(age)} BIRTHDAY KEITH`
-    : 'KEITH WILHELM FELIPE'
+    : "KEITH WILHELM FELIPE";
   // Dynamically change which word gets the neon green highlight
-  const highlightWord = isBirthday ? 'KEITH' : 'FELIPE'
+  const highlightWord = isBirthday ? "KEITH" : "FELIPE";
 
   // Scramble name when trigger is true
-  const scrambledName = useScramble(targetText, scrambleNameTrigger)
+  const scrambledName = useScramble(targetText, scrambleNameTrigger);
   // CLI-style role animation
-  const roleCLI = useRoleCLIAnimation(ROLES)
+  const roleCLI = useRoleCLIAnimation(ROLES);
 
   useEffect(() => {
-    setMounted(true)
-    setTimeout(() => setScrambleNameTrigger(true), 400) // Animate name after load
-  }, [])
+    setMounted(true);
+    setTimeout(() => setScrambleNameTrigger(true), 400); // Animate name after load
+  }, []);
 
   // Scramble name again when user scrolls to top (Back to Top)
   useEffect(() => {
     const onScroll = () => {
       if (window.scrollY === 0) {
-        setScrambleNameTrigger(false)
-        setTimeout(() => setScrambleNameTrigger(true), 10)
+        setScrambleNameTrigger(false);
+        setTimeout(() => setScrambleNameTrigger(true), 10);
       }
-    }
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Animated dot grid canvas
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let animId
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-    }
-    resize()
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
 
-    const dots = []
-    const spacing = 40
-    const cols = Math.ceil(canvas.width / spacing) + 1
-    const rows = Math.ceil(canvas.height / spacing) + 1
-    let mouse = { x: -9999, y: -9999 }
+    const dots = [];
+    const spacing = 40;
+    const cols = Math.ceil(canvas.width / spacing) + 1;
+    const rows = Math.ceil(canvas.height / spacing) + 1;
+    let mouse = { x: -9999, y: -9999 };
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        dots.push({ x: c * spacing, y: r * spacing, ox: c * spacing, oy: r * spacing })
+        dots.push({
+          x: c * spacing,
+          y: r * spacing,
+          ox: c * spacing,
+          oy: r * spacing,
+        });
       }
     }
 
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect()
-      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top }
-    })
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    });
 
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      dots.forEach(dot => {
-        const dx = mouse.x - dot.x
-        const dy = mouse.y - dot.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const radius = 120
-        const opacity = dist < radius
-          ? 0.06 + (1 - dist / radius) * 0.25
-          : 0.06
-        const size = dist < radius ? 1 + (1 - dist / radius) * 2 : 1
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach((dot) => {
+        const dx = mouse.x - dot.x;
+        const dy = mouse.y - dot.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const radius = 120;
+        const opacity =
+          dist < radius ? 0.06 + (1 - dist / radius) * 0.25 : 0.06;
+        const size = dist < radius ? 1 + (1 - dist / radius) * 2 : 1;
 
-        ctx.beginPath()
-        ctx.arc(dot.x, dot.y, size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(22, 193, 114, ${opacity})`
-        ctx.fill()
-      })
-      animId = requestAnimationFrame(draw)
-    }
-    draw()
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(22, 193, 114, ${opacity})`;
+        ctx.fill();
+      });
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
 
-    window.addEventListener('resize', resize)
+    window.addEventListener("resize", resize);
     return () => {
-      cancelAnimationFrame(animId)
-      window.removeEventListener('resize', resize)
-    }
-  }, [])
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   return (
     <>
@@ -303,6 +310,16 @@ export default function Hero() {
           display: inline-block;
           animation: pulse-green 2s infinite;
         }
+
+        /* ── NAME + SCANLINE WRAPPER ── */
+        .hero-name-wrap {
+          position: relative;
+          display: inline-block;
+          margin-bottom: 24px;
+          opacity: 0;
+          animation: fadeUp 0.8s 0.4s forwards;
+        }
+
         .hero-name {
           font-family: 'Syne', sans-serif;
           font-size: clamp(52px, 8vw, 112px);
@@ -310,14 +327,84 @@ export default function Hero() {
           line-height: 0.95;
           letter-spacing: -0.03em;
           color: #E8F5F0;
-          margin-bottom: 24px;
-          opacity: 0;
-          animation: fadeUp 0.8s 0.4s forwards;
+          margin: 0;
+          position: relative;
+          z-index: 1;
         }
         .hero-name .highlight {
           color: #16C172;
           text-shadow: 0 0 40px rgba(22,193,114,0.3);
         }
+
+        /* Apply scanline only to the text by duplicating text via a pseudo-element
+           and clipping the moving gradient to the text glyphs. This keeps the
+           original text/colors underneath and overlays the animated band. */
+        .hero-name {
+          position: relative;
+          z-index: 1;
+        }
+
+        .hero-name::after {
+          content: attr(data-text);
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          white-space: pre-wrap;
+          overflow: hidden;
+          display: block;
+          z-index: 2;
+
+          /* scanlines */
+          background: repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 3px,
+            rgba(5, 10, 7, 0.18) 3px,
+            rgba(5, 10, 7, 0.18) 4px
+          ), linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(22, 193, 114, 0.055) 40%,
+            rgba(22, 193, 114, 0.09) 50%,
+            rgba(22, 193, 114, 0.055) 60%,
+            transparent 100%
+          );
+          background-repeat: no-repeat, no-repeat;
+          background-size: 100% 100%, 100% 28%;
+          background-position: 0 0, 0 -40%;
+          animation: scanSweep 3.5s linear infinite;
+
+          /* clip background to text glyphs */
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+
+          /* blend the scan band with the underlying colored text */
+          mix-blend-mode: overlay;
+          opacity: 0.95;
+        }
+
+        /* subtle RGB-shift flicker on the whole name */
+        .hero-name-wrap:hover .hero-name {
+          animation: nameFlicker 0.08s steps(1) 3;
+        }
+
+        @keyframes scanSweep {
+          0%   { top: -30%; }
+          100% { top: 115%; }
+        }
+
+        @keyframes nameFlicker {
+          0%   { text-shadow: -2px 0 rgba(255,60,60,0.35), 2px 0 rgba(22,193,114,0.35); }
+          33%  { text-shadow:  2px 0 rgba(255,60,60,0.35), -2px 0 rgba(22,193,114,0.35); }
+          66%  { text-shadow: -1px 0 rgba(0,180,255,0.25), 1px 0 rgba(22,193,114,0.25); }
+          100% { text-shadow: 0 0 40px rgba(22,193,114,0.3); }
+        }
+
         .hero-role-wrap {
           height: 56px;
           overflow: hidden;
@@ -494,39 +581,59 @@ export default function Hero() {
             Available for remote work
           </div>
 
-          <h1 className="hero-name">
-            {scrambledName.split(' ').map((word, wi) => (
-              <span key={wi}>
-                {/* Dynamically highlight based on the date */}
-                {word === highlightWord ? <span className="highlight">{word}</span> : word}
-                {wi < scrambledName.split(' ').length - 1 ? ' ' : ''}
-              </span>
-            ))}
-          </h1>
+          {/* Name wrapped with scanline overlay */}
+          <div className="hero-name-wrap">
+            <h1 className="hero-name" data-text={scrambledName}>
+                {scrambledName.split(" ").map((word, wi) => (
+                  <span key={wi}>
+                    {word === highlightWord ? (
+                      <span className="highlight">{word}</span>
+                    ) : (
+                      word
+                    )}
+                    {wi < scrambledName.split(" ").length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </h1>
+          </div>
 
           <div className="hero-role-wrap">
-            <div className="hero-role" style={{ fontFamily: 'JetBrains Mono, monospace', display: 'flex', alignItems: 'center' }}>
-              — <span style={{ letterSpacing: '0.01em' }}>{roleCLI.text}</span>
-              <span className="cli-caret" style={{
-                display: 'inline-block',
-                width: '1ch',
-                marginLeft: '2px',
-                color: '#16C172',
-                opacity: roleCLI.caret ? 1 : 0,
-                fontWeight: 700,
-                fontSize: '1.1em',
-                borderBottom: '3px solid #16C172',
-                height: '1.1em',
-                lineHeight: '1.1em',
-                transition: 'opacity 0.1s',
-                position: 'relative',
-                top: '2px',
-              }}>_</span>
+            <div
+              className="hero-role"
+              style={{
+                fontFamily: "JetBrains Mono, monospace",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              — <span style={{ letterSpacing: "0.01em" }}>{roleCLI.text}</span>
+              <span
+                className="cli-caret"
+                style={{
+                  display: "inline-block",
+                  width: "1ch",
+                  marginLeft: "2px",
+                  color: "#16C172",
+                  opacity: roleCLI.caret ? 1 : 0,
+                  fontWeight: 700,
+                  fontSize: "1.1em",
+                  borderBottom: "3px solid #16C172",
+                  height: "1.1em",
+                  lineHeight: "1.1em",
+                  transition: "opacity 0.1s",
+                  position: "relative",
+                  top: "2px",
+                }}
+              >
+                _
+              </span>
             </div>
           </div>
 
           <p className="hero-desc">
-            BSIT graduate building enterprise-grade web systems. Specialized in real-time React applications, complex workflow automation, and full-stack solutions that scale.
+            BSIT graduate building enterprise-grade web systems. Specialized in
+            real-time React applications, complex workflow automation, and
+            full-stack solutions that scale.
           </p>
 
           <div className="hero-actions">
@@ -534,8 +641,10 @@ export default function Hero() {
               className="btn-primary"
               href="#projects"
               onClick={(e) => {
-                e.preventDefault()
-                document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .querySelector("#projects")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               View Projects →
@@ -567,5 +676,5 @@ export default function Hero() {
         </div>
       </section>
     </>
-  )
+  );
 }
