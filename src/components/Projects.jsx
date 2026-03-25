@@ -62,6 +62,27 @@ const PROJECTS = [
     impact: 'Complete ERP Module',
     icon: FaMoneyCheckAlt,
   },
+  {
+    num: '04',
+    title: 'Ingestion & Document Automation Service',
+    subtitle: 'Backend Automation & OCR',
+    year: '2026',
+    stack: ['Express', 'TypeScript', 'Python', 'OCR', 'API', 'Data Automation'],
+    type: 'Backend Automation',
+    color: '#3B82F6',
+    desc: 'A robust backend service powering automated document ingestion and data extraction for enterprise workflows. Handles uploads of PDFs, images, spreadsheets, and Word documents, leveraging advanced OCR (Optical Character Recognition) and parsing to convert unstructured files into actionable data.',
+    highlights: [
+      'Multi-provider OCR (Tesseract, EasyOCR, Qwen-VL) for high-accuracy text extraction',
+      'Secure API endpoints for document upload and data confirmation',
+      'Supports PDF, Excel, Word, JPEG, PNG, and more',
+      'Scalable job queue with concurrent processing and rate limiting',
+      'Automatic file validation, hashing, and audit trails',
+      'Integrates seamlessly with financial, payroll, and inventory systems',
+      'Built with Express, TypeScript, and Python OCR workers',
+    ],
+    impact: 'Enterprise Data Automation',
+    icon: FaMoneyCheckAlt,
+  },
 ]
 
 function ProjectCard({ project, index }) {
