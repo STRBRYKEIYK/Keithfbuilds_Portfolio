@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { FaStore, FaTruckMoving, FaMoneyCheckAlt } from 'react-icons/fa'
+import { FaStore, FaTruckMoving, FaMoneyCheckAlt, FaFileAlt } from 'react-icons/fa'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { RiTerminalBoxLine } from 'react-icons/ri'
+import { BsCircleFill } from 'react-icons/bs'
 
 const PROJECTS = [
   {
@@ -20,6 +23,7 @@ const PROJECTS = [
       'CSV / XLSX / JSON export & analytics',
     ],
     impact: '1,000+ SKUs',
+    impactLabel: 'Managed',
     icon: FaStore,
   },
   {
@@ -40,6 +44,7 @@ const PROJECTS = [
       'Real-time WebSocket order status notifications',
     ],
     impact: 'Full Supply Chain',
+    impactLabel: 'Coverage',
     icon: FaTruckMoving,
   },
   {
@@ -48,7 +53,7 @@ const PROJECTS = [
     subtitle: 'Full-Stack Financial Systems',
     year: '2026',
     stack: ['React', 'TypeScript', 'State Machine', 'Data Analytics'],
-    type: 'Financial Management',
+    type: 'Financial Mgmt',
     color: '#F59E0B',
     desc: 'Sophisticated financial management platform handling vouchers, invoicing, payroll, expense tracking, employee loans, and monthly billing with comprehensive audit trails.',
     highlights: [
@@ -59,263 +64,51 @@ const PROJECTS = [
       'Employee loans system with 4 loan types',
       'Multi-sheet Excel exports with professional styling',
     ],
-    impact: 'Complete ERP Module',
+    impact: 'Complete ERP',
+    impactLabel: 'Module',
     icon: FaMoneyCheckAlt,
   },
   {
     num: '04',
-    title: 'Ingestion & Document Automation Service',
+    title: 'Doc Automation Service',
     subtitle: 'Backend Automation & OCR',
     year: '2026',
-    stack: ['Express', 'TypeScript', 'Python', 'OCR', 'API', 'Data Automation'],
-    type: 'Backend Automation',
+    stack: ['Express', 'TypeScript', 'Python', 'OCR', 'API'],
+    type: 'Backend Auto',
     color: '#3B82F6',
-    desc: 'A robust backend service powering automated document ingestion and data extraction for enterprise workflows. Handles uploads of PDFs, images, spreadsheets, and Word documents, leveraging advanced OCR (Optical Character Recognition) and parsing to convert unstructured files into actionable data.',
+    desc: 'A robust backend service powering automated document ingestion and data extraction for enterprise workflows. Handles PDFs, images, spreadsheets, and Word documents leveraging advanced multi-provider OCR.',
     highlights: [
-      'Multi-provider OCR (Tesseract, EasyOCR, Qwen-VL) for high-accuracy text extraction',
-      'Secure API endpoints for document upload and data confirmation',
-      'Supports PDF, Excel, Word, JPEG, PNG, and more',
-      'Scalable job queue with concurrent processing and rate limiting',
+      'Multi-provider OCR (Tesseract, EasyOCR, Qwen-VL)',
+      'Secure API endpoints for document upload & confirmation',
+      'Supports PDF, Excel, Word, JPEG, PNG and more',
+      'Scalable job queue with concurrent processing',
       'Automatic file validation, hashing, and audit trails',
-      'Integrates seamlessly with financial, payroll, and inventory systems',
-      'Built with Express, TypeScript, and Python OCR workers',
+      'Integrates with financial, payroll, and inventory systems',
     ],
-    impact: 'Enterprise Data Automation',
-    icon: FaMoneyCheckAlt,
+    impact: 'Multi-Provider',
+    impactLabel: 'OCR Engine',
+    icon: FaFileAlt,
   },
 ]
 
-function ProjectCard({ project, index }) {
-  const [expanded, setExpanded] = useState(false)
-  const cardRef = useRef(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setTimeout(() => entry.target.classList.add('visible'), index * 150)
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-    if (cardRef.current) observer.observe(cardRef.current)
-    return () => observer.disconnect()
-  }, [index])
-
-  const Icon = project.icon
-  return (
-    <>
-      <style>{`
-        .project-card {
-          background: var(--bg-card);
-          border: 1px solid rgba(22,193,114,0.08);
-          border-radius: 12px;
-          overflow: hidden;
-          transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s;
-          opacity: 0;
-          transform: translateY(40px);
-          transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out),
-            border-color 0.3s, box-shadow 0.3s;
-        }
-        .project-card.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        .project-card:hover {
-          border-color: rgba(22,193,114,0.2);
-          box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-          transform: translateY(-4px);
-        }
-        .project-card-header {
-          padding: 32px 32px 24px;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          position: relative;
-        }
-        .project-num {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          color: #4A6B57;
-          letter-spacing: 0.1em;
-          margin-bottom: 8px;
-        }
-        .project-type-badge {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 10px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          padding: 6px 12px;
-          border-radius: 3px;
-          border: 1px solid;
-          flex-shrink: 0;
-        }
-        .project-title {
-          font-size: 22px;
-          color: #E8F5F0;
-          margin-bottom: 4px;
-        }
-        .project-subtitle {
-          font-size: 13px;
-          color: #4A6B57;
-          font-family: 'JetBrains Mono', monospace;
-          margin-bottom: 16px;
-        }
-        .project-desc {
-          padding: 0 32px;
-          font-size: 14px;
-          color: #7A9E8C;
-          line-height: 1.75;
-          font-weight: 300;
-          margin-bottom: 24px;
-        }
-        .project-stack {
-          padding: 0 32px;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 24px;
-        }
-        .stack-tag {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 10px;
-          letter-spacing: 0.06em;
-          padding: 5px 12px;
-          border-radius: 3px;
-          background: rgba(22,193,114,0.07);
-          color: #16C172;
-          border: 1px solid rgba(22,193,114,0.15);
-        }
-        .project-expand-btn {
-          width: 100%;
-          padding: 16px 32px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: #4A6B57;
-          border-top: 1px solid rgba(22,193,114,0.06);
-          transition: color 0.2s, background 0.2s;
-        }
-        .project-expand-btn:hover {
-          color: #16C172;
-          background: rgba(22,193,114,0.03);
-        }
-        .expand-icon {
-          width: 20px;
-          height: 20px;
-          border: 1px solid currentColor;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-          transition: transform 0.3s ease;
-        }
-        .expand-icon.open { transform: rotate(45deg); }
-        .project-highlights {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1);
-        }
-        .project-highlights.open {
-          max-height: 400px;
-        }
-        .highlights-inner {
-          padding: 24px 32px 32px;
-          border-top: 1px solid rgba(22,193,114,0.06);
-        }
-        .highlight-item {
-          display: flex;
-          gap: 12px;
-          align-items: flex-start;
-          margin-bottom: 10px;
-          font-size: 13.5px;
-          color: #7A9E8C;
-          font-weight: 300;
-          line-height: 1.6;
-        }
-        .highlight-item::before {
-          content: '▸';
-          color: #16C172;
-          flex-shrink: 0;
-          margin-top: 1px;
-          font-size: 11px;
-        }
-        .project-impact {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          margin-top: 16px;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.1em;
-          color: #4A6B57;
-          text-transform: uppercase;
-        }
-        .project-impact strong {
-          color: #16C172;
-          font-size: 13px;
-        }
-      `}</style>
-
-      <div ref={cardRef} className="project-card">
-        <div style={{ position: 'absolute', top: 24, right: 24, fontSize: 32, color: project.color, opacity: 0.18 }}>
-          {Icon && <Icon />}
-        </div>
-        <div className="project-card-header">
-          <div>
-            <div className="project-num">{project.num} / 03</div>
-            <h3 className="project-title">{project.title}</h3>
-            <div className="project-subtitle">// {project.subtitle}</div>
-          </div>
-          <div
-            className="project-type-badge"
-            style={{
-              color: project.color,
-              borderColor: `${project.color}33`,
-              background: `${project.color}0D`,
-            }}
-          >
-            {project.type}
-          </div>
-        </div>
-
-        <p className="project-desc">{project.desc}</p>
-
-        <div className="project-stack">
-          {project.stack.map(s => (
-            <span key={s} className="stack-tag">{s}</span>
-          ))}
-        </div>
-
-        <button className="project-expand-btn" onClick={() => setExpanded(!expanded)}>
-          <span>{expanded ? 'Hide Details' : 'View Highlights'}</span>
-          <div className={`expand-icon ${expanded ? 'open' : ''}`}>+</div>
-        </button>
-
-        <div className={`project-highlights ${expanded ? 'open' : ''}`}>
-          <div className="highlights-inner">
-            {project.highlights.map((h, i) => (
-              <div key={i} className="highlight-item">{h}</div>
-            ))}
-            <div className="project-impact">
-              Impact: <strong>{project.impact}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
 export default function Projects() {
   const sectionRef = useRef(null)
+  const [active, setActive] = useState(0)
+  const [animating, setAnimating] = useState(false)
+  const [dir, setDir] = useState(1)
+
+  const goTo = (idx) => {
+    if (animating || idx === active) return
+    setDir(idx > active ? 1 : -1)
+    setAnimating(true)
+    setTimeout(() => {
+      setActive(idx)
+      setAnimating(false)
+    }, 300)
+  }
+
+  const prev = () => goTo((active - 1 + PROJECTS.length) % PROJECTS.length)
+  const next = () => goTo((active + 1) % PROJECTS.length)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -334,9 +127,25 @@ export default function Projects() {
     return () => observer.disconnect()
   }, [])
 
+  const proj = PROJECTS[active]
+  const ProjIcon = proj.icon
+
   return (
     <>
       <style>{`
+        @keyframes projSlideIn {
+          from { opacity: 0; transform: translateX(${dir > 0 ? '30px' : '-30px'}); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes hlReveal {
+          from { opacity: 0; transform: translateX(-8px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes glowPulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.8; }
+        }
+
         .projects {
           padding: 140px 0;
           background: var(--bg);
@@ -347,7 +156,10 @@ export default function Projects() {
           padding: 0 40px;
         }
         .projects-header {
-          margin-bottom: 64px;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          margin-bottom: 56px;
         }
         .projects-section-label {
           font-family: 'JetBrains Mono', monospace;
@@ -368,49 +180,516 @@ export default function Projects() {
           background: #16C172;
         }
         .projects-heading {
-          font-size: clamp(36px, 4vw, 56px);
+          font-size: clamp(32px, 4vw, 52px);
           color: #E8F5F0;
-          max-width: 500px;
         }
-        .projects-grid {
+
+        /* Nav controls */
+        .proj-nav {
           display: flex;
-          flex-direction: row;
-          gap: 16px;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          padding-bottom: 8px;
+          align-items: center;
+          gap: 12px;
         }
-        .project-card {
-          scroll-snap-align: start;
-          min-width: 360px;
-          flex: 0 0 360px;
+        .scanline-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border: 1px solid rgba(22,193,114,0.35);
+          border-radius: 4px;
+          background: rgba(22,193,114,0.04);
+          color: #16C172;
+          cursor: pointer;
+          overflow: hidden;
+          transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
         }
-        @media (max-width: 1024px) {
-          .projects-grid { grid-template-columns: 1fr 1fr; }
+        .scanline-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(22,193,114,0.04) 3px,
+            rgba(22,193,114,0.04) 4px
+          );
+          pointer-events: none;
+          z-index: 1;
+        }
+        .scanline-btn svg { position: relative; z-index: 2; font-size: 20px; }
+        .scanline-btn:hover {
+          border-color: #16C172;
+          background: rgba(22,193,114,0.12);
+          box-shadow: 0 0 18px rgba(22,193,114,0.22), inset 0 0 16px rgba(22,193,114,0.05);
+          color: #fff;
+        }
+        .scanline-btn:active { transform: scale(0.95); }
+
+        .proj-counter {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px;
+          color: #4A6B57;
+          min-width: 56px;
+          text-align: center;
+          letter-spacing: 0.05em;
+        }
+        .proj-counter span { color: #16C172; }
+
+        /* ── Main showcase ── */
+        .proj-showcase {
+          display: grid;
+          grid-template-columns: 1fr 380px;
+          gap: 20px;
+          align-items: stretch;
+        }
+
+        /* Left: main card */
+        .proj-main-card {
+          position: relative;
+          border-radius: 14px;
+          border: 1px solid rgba(22,193,114,0.1);
+          overflow: hidden;
+          background: var(--bg-card);
+          min-height: 480px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Big number bg decoration */
+        .proj-bg-num {
+          position: absolute;
+          top: -10px;
+          right: 24px;
+          font-family: 'Syne', sans-serif;
+          font-size: 160px;
+          font-weight: 800;
+          line-height: 1;
+          color: transparent;
+          -webkit-text-stroke: 1px;
+          opacity: 0.06;
+          pointer-events: none;
+          letter-spacing: -0.04em;
+          user-select: none;
+        }
+
+        /* Scanline texture overlay */
+        .proj-scanlines {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(22,193,114,0.012) 3px,
+            rgba(22,193,114,0.012) 4px
+          );
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .proj-main-top {
+          padding: 36px 36px 28px;
+          position: relative;
+          z-index: 1;
+          flex: 1;
+        }
+
+        .proj-badge-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        .proj-type-badge {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          padding: 5px 12px;
+          border-radius: 3px;
+          border: 1px solid;
+        }
+        .proj-year-badge {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          color: #4A6B57;
+          letter-spacing: 0.05em;
+        }
+        .proj-live-dot {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.1em;
+          color: #16C172;
+          margin-left: auto;
+          text-transform: uppercase;
+        }
+        .proj-live-dot svg {
+          font-size: 7px;
+          animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .proj-title-block {
+          margin-bottom: 20px;
+        }
+        .proj-num-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          color: #4A6B57;
+          letter-spacing: 0.08em;
+          margin-bottom: 6px;
+        }
+        .proj-title {
+          font-family: 'Syne', sans-serif;
+          font-size: clamp(26px, 3vw, 36px);
+          font-weight: 700;
+          color: #E8F5F0;
+          line-height: 1.15;
+          margin-bottom: 6px;
+        }
+        .proj-subtitle {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          color: #4A6B57;
+        }
+
+        .proj-desc {
+          font-size: 14px;
+          color: #7A9E8C;
+          line-height: 1.8;
+          font-weight: 300;
+          margin-bottom: 24px;
+          max-width: 560px;
+        }
+
+        /* Stack tags */
+        .proj-stack {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+          margin-bottom: 0;
+        }
+        .stack-tag {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.06em;
+          padding: 5px 12px;
+          border-radius: 3px;
+          background: rgba(22,193,114,0.07);
+          color: #16C172;
+          border: 1px solid rgba(22,193,114,0.15);
+          transition: background 0.2s;
+        }
+        .stack-tag:hover { background: rgba(22,193,114,0.14); }
+
+        /* Impact bar at bottom */
+        .proj-impact-bar {
+          padding: 16px 36px;
+          border-top: 1px solid rgba(22,193,114,0.07);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+          z-index: 1;
+        }
+        .proj-impact-text {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #4A6B57;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .proj-impact-value {
+          font-family: 'Syne', sans-serif;
+          font-size: 14px;
+          font-weight: 700;
+        }
+        .proj-icon-large {
+          font-size: 22px;
+          opacity: 0.5;
+        }
+
+        /* ── Right panel ── */
+        .proj-side-panel {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        /* Highlights card */
+        .proj-highlights-card {
+          flex: 1;
+          background: var(--bg-card);
+          border: 1px solid rgba(22,193,114,0.08);
+          border-radius: 14px;
+          overflow: hidden;
+          position: relative;
+        }
+        .proj-highlights-header {
+          padding: 20px 24px 16px;
+          border-bottom: 1px solid rgba(22,193,114,0.07);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .proj-highlights-title {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #4A6B57;
+        }
+        .proj-highlights-body {
+          padding: 20px 24px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .highlight-item {
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+          font-size: 12.5px;
+          color: #7A9E8C;
+          font-weight: 300;
+          line-height: 1.5;
+          animation: hlReveal 0.35s ease both;
+        }
+        .highlight-item::before {
+          content: '▸';
+          color: #16C172;
+          flex-shrink: 0;
+          margin-top: 1px;
+          font-size: 9px;
+          margin-top: 3px;
+        }
+
+        /* Thumbnail list */
+        .proj-thumb-list {
+          display: flex;
+          gap: 10px;
+        }
+        .proj-thumb {
+          flex: 1;
+          padding: 14px 12px;
+          background: var(--bg-card);
+          border: 1px solid rgba(22,193,114,0.08);
+          border-radius: 10px;
+          cursor: pointer;
+          transition: border-color 0.2s, background 0.2s, transform 0.2s;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          position: relative;
+          overflow: hidden;
+        }
+        .proj-thumb::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(22,193,114,0.025) 3px,
+            rgba(22,193,114,0.025) 4px
+          );
+          pointer-events: none;
+        }
+        .proj-thumb.thumb-active {
+          border-color: rgba(22,193,114,0.35);
+          background: rgba(22,193,114,0.04);
+          transform: translateY(-2px);
+        }
+        .proj-thumb:hover:not(.thumb-active) {
+          border-color: rgba(22,193,114,0.2);
+          transform: translateY(-2px);
+        }
+        .proj-thumb-icon {
+          font-size: 18px;
+          position: relative;
+          z-index: 1;
+        }
+        .proj-thumb-num {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.1em;
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Animated content key */
+        .proj-animated { animation: projSlideIn 0.32s ease both; }
+
+        @media (max-width: 960px) {
+          .proj-showcase { grid-template-columns: 1fr; }
+          .proj-side-panel { flex-direction: column; }
+          .proj-thumb-list { gap: 8px; }
         }
         @media (max-width: 640px) {
-          .projects-grid { grid-template-columns: 1fr; }
           .projects { padding: 100px 0; }
           .projects-inner { padding: 0 24px; }
+          .projects-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+          .proj-main-top { padding: 28px 24px 20px; }
+          .proj-impact-bar { padding: 14px 24px; }
+          .proj-bg-num { font-size: 100px; }
         }
       `}</style>
 
       <section id="projects" className="projects" ref={sectionRef}>
         <div className="projects-inner">
+
+          {/* Header */}
           <div className="projects-header">
-            <div className="projects-section-label reveal" data-reveal>
-              Selected Work
+            <div>
+              <div className="projects-section-label reveal" data-reveal>Selected Work</div>
+              <h2 className="projects-heading reveal" data-reveal>
+                Enterprise Systems<br />I've Built
+              </h2>
             </div>
-            <h2 className="projects-heading reveal" data-reveal>
-              Enterprise Systems<br />I've Built
-            </h2>
+            <div className="proj-nav reveal" data-reveal>
+              <button className="scanline-btn" onClick={prev} aria-label="Previous project">
+                <FiChevronLeft />
+              </button>
+              <span className="proj-counter">
+                <span>{proj.num}</span>&nbsp;/&nbsp;{String(PROJECTS.length).padStart(2, '0')}
+              </span>
+              <button className="scanline-btn" onClick={next} aria-label="Next project">
+                <FiChevronRight />
+              </button>
+            </div>
           </div>
 
-          <div className="projects-grid" tabIndex={0} style={{ position: 'relative' }}>
-            {PROJECTS.map((project, i) => (
-              <ProjectCard key={project.num} project={project} index={i} />
-            ))}
+          <div className="proj-showcase reveal" data-reveal>
+
+            {/* ── Left: Main Feature Card ── */}
+            <div
+              className="proj-main-card"
+              style={{ borderColor: `${proj.color}22`, boxShadow: `0 0 60px ${proj.color}0A` }}
+            >
+              <div className="proj-scanlines" />
+              <div
+                className="proj-bg-num"
+                style={{ WebkitTextStrokeColor: proj.color }}
+              >
+                {proj.num}
+              </div>
+
+              <div className="proj-main-top">
+                <div className="proj-animated" key={`badge-${active}`}>
+                  <div className="proj-badge-row">
+                    <span
+                      className="proj-type-badge"
+                      style={{
+                        color: proj.color,
+                        borderColor: `${proj.color}33`,
+                        background: `${proj.color}0D`,
+                      }}
+                    >
+                      {proj.type}
+                    </span>
+                    <span className="proj-year-badge">{proj.year}</span>
+                    <span className="proj-live-dot">
+                      <BsCircleFill />
+                      Active
+                    </span>
+                  </div>
+
+                  <div className="proj-title-block">
+                    <div className="proj-num-label">Project {proj.num} of {String(PROJECTS.length).padStart(2, '0')}</div>
+                    <h3 className="proj-title">{proj.title}</h3>
+                    <div className="proj-subtitle">// {proj.subtitle}</div>
+                  </div>
+
+                  <p className="proj-desc">{proj.desc}</p>
+
+                  <div className="proj-stack">
+                    {proj.stack.map(s => (
+                      <span key={s} className="stack-tag" style={{ color: proj.color, background: `${proj.color}0C`, borderColor: `${proj.color}25` }}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="proj-impact-bar"
+                style={{ borderTopColor: `${proj.color}12`, background: `${proj.color}05` }}
+              >
+                <div className="proj-impact-text">
+                  <span>Impact:</span>
+                  <span className="proj-impact-value" style={{ color: proj.color }}>
+                    {proj.impact}
+                  </span>
+                  <span style={{ color: '#4A6B57' }}>{proj.impactLabel}</span>
+                </div>
+                <span className="proj-icon-large" style={{ color: proj.color }}>
+                  <ProjIcon />
+                </span>
+              </div>
+            </div>
+
+            {/* ── Right Panel ── */}
+            <div className="proj-side-panel">
+
+              {/* Highlights */}
+              <div className="proj-highlights-card" style={{ borderColor: `${proj.color}12` }}>
+                <div className="proj-highlights-header">
+                  <RiTerminalBoxLine style={{ color: proj.color, fontSize: 13 }} />
+                  <span className="proj-highlights-title">Key Highlights</span>
+                </div>
+                <div className="proj-highlights-body" key={`hl-${active}`}>
+                  {proj.highlights.map((h, i) => (
+                    <div
+                      key={i}
+                      className="highlight-item"
+                      style={{ animationDelay: `${i * 55}ms` }}
+                    >
+                      {h}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Thumbnail switcher */}
+              <div className="proj-thumb-list">
+                {PROJECTS.map((p, i) => {
+                  const TIcon = p.icon
+                  return (
+                    <button
+                      key={p.num}
+                      className={`proj-thumb ${i === active ? 'thumb-active' : ''}`}
+                      onClick={() => goTo(i)}
+                      aria-label={`Switch to ${p.title}`}
+                      style={i === active ? { borderColor: `${p.color}45`, background: `${p.color}08` } : {}}
+                    >
+                      <span className="proj-thumb-icon" style={{ color: i === active ? p.color : '#4A6B57' }}>
+                        <TIcon />
+                      </span>
+                      <span
+                        className="proj-thumb-num"
+                        style={{ color: i === active ? p.color : '#4A6B57' }}
+                      >
+                        {p.num}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+            </div>
           </div>
+
         </div>
       </section>
     </>

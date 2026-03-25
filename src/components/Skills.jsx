@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react'
-import { FaStore, FaTruckMoving, FaMoneyCheckAlt } from 'react-icons/fa'
+import { useEffect, useRef, useState } from 'react'
+import { FaStore, FaTruckMoving, FaMoneyCheckAlt, FaFileAlt } from 'react-icons/fa'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { RiTerminalBoxLine } from 'react-icons/ri'
 
 const SKILLS_PRIMARY = [
   { name: 'React 18', level: 95, cat: 'frontend' },
@@ -25,30 +27,62 @@ const SPECIALIZATIONS = [
     desc: 'Full-stack point-of-sale platforms with barcode scanning, 1,000+ SKU support, real-time stock validation, and offline-first PWA capabilities.',
     tags: ['React', 'WebSocket', 'PWA', 'IndexedDB'],
     icon: FaStore,
+    id: '01',
+    stat: '1,000+ SKUs',
+    statLabel: 'Supported',
+    accentColor: '#16C172',
   },
   {
     title: 'Procurement & Supply Chain',
     desc: 'Enterprise procurement modules with QR/barcode integration, multi-step PO wizards, supplier management, and duplicate detection algorithms.',
     tags: ['React', 'QR/Barcode', 'Workflow', 'CSV/Excel'],
     icon: FaTruckMoving,
+    id: '02',
+    stat: 'End-to-End',
+    statLabel: 'Supply Chain',
+    accentColor: '#0EADD4',
   },
   {
     title: 'Financial Management Systems',
     desc: 'Sophisticated payroll and financial platforms with multi-level approval workflows, dynamic dashboards, voucher management, and audit trails.',
     tags: ['State Machine', 'Dashboards', 'Excel Export', 'TypeScript'],
     icon: FaMoneyCheckAlt,
+    id: '03',
+    stat: 'Multi-Level',
+    statLabel: 'Approvals',
+    accentColor: '#F59E0B',
   },
   {
     title: 'Ingestion & Document Automation',
-    desc: 'Backend service for automated document ingestion, OCR, and data extraction. Handles PDFs, images, spreadsheets, and Word docs with multi-provider OCR and secure API endpoints. Integrates with enterprise workflows.',
+    desc: 'Backend service for automated document ingestion, OCR, and data extraction. Handles PDFs, images, spreadsheets, and Word docs with multi-provider OCR and secure API endpoints.',
     tags: ['Express', 'TypeScript', 'Python', 'OCR', 'API', 'Data Automation'],
-    icon: FaMoneyCheckAlt,
+    icon: FaFileAlt,
+    id: '04',
+    stat: 'Multi-Provider',
+    statLabel: 'OCR Engine',
+    accentColor: '#3B82F6',
   },
 ]
 
 export default function Skills() {
   const sectionRef = useRef(null)
   const barsRef = useRef([])
+  const [activeSpec, setActiveSpec] = useState(0)
+  const [direction, setDirection] = useState(1)
+  const [animating, setAnimating] = useState(false)
+
+  const goTo = (idx) => {
+    if (animating) return
+    setDirection(idx > activeSpec ? 1 : -1)
+    setAnimating(true)
+    setTimeout(() => {
+      setActiveSpec(idx)
+      setAnimating(false)
+    }, 280)
+  }
+
+  const prev = () => goTo((activeSpec - 1 + SPECIALIZATIONS.length) % SPECIALIZATIONS.length)
+  const next = () => goTo((activeSpec + 1) % SPECIALIZATIONS.length)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -58,7 +92,6 @@ export default function Skills() {
             entry.target.querySelectorAll('[data-reveal]').forEach((el, i) => {
               setTimeout(() => el.classList.add('visible'), i * 80)
             })
-            // Animate bars
             barsRef.current.forEach((bar, i) => {
               if (bar) {
                 setTimeout(() => {
@@ -75,9 +108,28 @@ export default function Skills() {
     return () => observer.disconnect()
   }, [])
 
+  const spec = SPECIALIZATIONS[activeSpec]
+  const SpecIcon = spec.icon
+
   return (
     <>
       <style>{`
+        @keyframes ticker {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes specFadeIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scanPulse {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+        @keyframes cornerBlink {
+          0%, 90%, 100% { opacity: 1; }
+          95% { opacity: 0; }
+        }
         .skills {
           padding: 140px 0;
           background: var(--bg-2);
@@ -124,6 +176,7 @@ export default function Skills() {
           font-family: 'JetBrains Mono', monospace;
           line-height: 1.6;
         }
+
         /* Ticker */
         .skills-ticker {
           overflow: hidden;
@@ -133,8 +186,7 @@ export default function Skills() {
           border-bottom: 1px solid rgba(22,193,114,0.08);
           position: relative;
         }
-        .skills-ticker::before,
-        .skills-ticker::after {
+        .skills-ticker::before, .skills-ticker::after {
           content: '';
           position: absolute;
           top: 0; bottom: 0;
@@ -142,14 +194,8 @@ export default function Skills() {
           z-index: 2;
           pointer-events: none;
         }
-        .skills-ticker::before {
-          left: 0;
-          background: linear-gradient(to right, var(--bg-2), transparent);
-        }
-        .skills-ticker::after {
-          right: 0;
-          background: linear-gradient(to left, var(--bg-2), transparent);
-        }
+        .skills-ticker::before { left: 0; background: linear-gradient(to right, var(--bg-2), transparent); }
+        .skills-ticker::after { right: 0; background: linear-gradient(to left, var(--bg-2), transparent); }
         .ticker-track {
           display: flex;
           gap: 16px;
@@ -167,16 +213,14 @@ export default function Skills() {
           border-radius: 3px;
           transition: color 0.2s, border-color 0.2s;
         }
-        .ticker-tag:hover {
-          color: #16C172;
-          border-color: rgba(22,193,114,0.3);
-        }
-        /* Bar grid */
+        .ticker-tag:hover { color: #16C172; border-color: rgba(22,193,114,0.3); }
+
+        /* Skill bars */
         .skills-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 20px 60px;
-          margin-bottom: 80px;
+          margin-bottom: 100px;
         }
         .skill-bar-item {
           padding: 0 0 20px;
@@ -213,74 +257,207 @@ export default function Skills() {
           transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
           box-shadow: 0 0 8px rgba(22,193,114,0.4);
         }
-        /* Specialization cards */
+
+        /* ── Specializations ── */
+        .spec-section-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 32px;
+        }
         .spec-heading {
           font-family: 'JetBrains Mono', monospace;
           font-size: 11px;
           letter-spacing: 0.15em;
           color: #4A6B57;
           text-transform: uppercase;
-          margin-bottom: 24px;
-        }
-        .spec-grid {
           display: flex;
-          flex-direction: row;
-          gap: 16px;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          padding-bottom: 8px;
+          align-items: center;
+          gap: 8px;
         }
-        .spec-card {
-          scroll-snap-align: start;
-          min-width: 320px;
-          flex: 0 0 320px;
-        }
-        .spec-card {
-          background: var(--bg-card);
-          border: 1px solid rgba(22,193,114,0.08);
-          border-radius: 10px;
-          padding: 32px 28px;
+        .spec-heading svg { color: #16C172; }
+
+        /* Scanline nav buttons */
+        .scanline-btn {
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          border: 1px solid rgba(22,193,114,0.35);
+          border-radius: 4px;
+          background: rgba(22,193,114,0.04);
+          color: #16C172;
+          cursor: pointer;
           overflow: hidden;
-          transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s;
+          transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
         }
-        .spec-card::after {
+        .scanline-btn::before {
           content: '';
           position: absolute;
           inset: 0;
-          background: radial-gradient(circle at 50% 0%, rgba(22,193,114,0.05) 0%, transparent 60%);
-          opacity: 0;
-          transition: opacity 0.4s;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(22,193,114,0.04) 3px,
+            rgba(22,193,114,0.04) 4px
+          );
+          pointer-events: none;
+          z-index: 1;
         }
-        .spec-card:hover {
-          border-color: rgba(22,193,114,0.25);
-          transform: translateY(-6px);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(22,193,114,0.05);
+        .scanline-btn svg { position: relative; z-index: 2; font-size: 18px; }
+        .scanline-btn:hover {
+          border-color: #16C172;
+          background: rgba(22,193,114,0.12);
+          box-shadow: 0 0 16px rgba(22,193,114,0.2), inset 0 0 16px rgba(22,193,114,0.05);
+          color: #fff;
         }
-        .spec-card:hover::after { opacity: 1; }
-        .spec-icon {
-          font-size: 32px;
-          margin-bottom: 20px;
-          display: block;
+        .scanline-btn:active { transform: scale(0.95); }
+
+        .spec-nav-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
-        .spec-title {
+        .spec-counter {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          color: #4A6B57;
+          min-width: 52px;
+          text-align: center;
+          letter-spacing: 0.05em;
+        }
+        .spec-counter span { color: #16C172; }
+
+        /* Main spec card */
+        .spec-showcase {
+          position: relative;
+          display: grid;
+          grid-template-columns: 260px 1fr;
+          gap: 0;
+          border: 1px solid rgba(22,193,114,0.12);
+          border-radius: 12px;
+          overflow: hidden;
+          min-height: 320px;
+          background: var(--bg-card);
+        }
+        .spec-showcase-left {
+          padding: 40px 32px;
+          border-right: 1px solid rgba(22,193,114,0.08);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          position: relative;
+          overflow: hidden;
+        }
+        .spec-showcase-left::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(22,193,114,0.018) 3px,
+            rgba(22,193,114,0.018) 4px
+          );
+          pointer-events: none;
+        }
+        .spec-left-id {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 72px;
+          font-weight: 700;
+          line-height: 1;
+          opacity: 0.06;
+          position: absolute;
+          bottom: 24px;
+          left: 24px;
+          color: #16C172;
+          letter-spacing: -0.04em;
+        }
+        .spec-icon-wrap {
+          width: 64px;
+          height: 64px;
+          border-radius: 10px;
+          border: 1px solid;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 26px;
+          margin-bottom: 24px;
+          position: relative;
+          z-index: 1;
+          transition: box-shadow 0.3s;
+        }
+        .spec-stat-block { position: relative; z-index: 1; }
+        .spec-stat-number {
           font-family: 'Syne', sans-serif;
-          font-size: 18px;
+          font-size: 22px;
+          font-weight: 800;
+          color: #E8F5F0;
+          line-height: 1;
+          margin-bottom: 4px;
+        }
+        .spec-stat-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #4A6B57;
+        }
+
+        /* Dot indicators */
+        .spec-dots {
+          display: flex;
+          gap: 6px;
+          position: relative;
+          z-index: 1;
+        }
+        .spec-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: rgba(22,193,114,0.2);
+          border: 1px solid rgba(22,193,114,0.3);
+          cursor: pointer;
+          transition: background 0.2s, transform 0.2s;
+        }
+        .spec-dot.active {
+          background: #16C172;
+          transform: scale(1.3);
+        }
+
+        .spec-showcase-right {
+          padding: 40px 40px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .spec-card-content {
+          animation: specFadeIn 0.32s ease both;
+        }
+        .spec-card-title {
+          font-family: 'Syne', sans-serif;
+          font-size: 28px;
           font-weight: 700;
           color: #E8F5F0;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
+          line-height: 1.2;
         }
-        .spec-desc {
-          font-size: 13.5px;
+        .spec-card-desc {
+          font-size: 14.5px;
           color: #7A9E8C;
+          line-height: 1.8;
           font-weight: 300;
-          line-height: 1.7;
-          margin-bottom: 20px;
+          margin-bottom: 28px;
+          max-width: 520px;
         }
         .spec-tags {
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
+          gap: 8px;
         }
         .spec-tag {
           font-family: 'JetBrains Mono', monospace;
@@ -288,11 +465,37 @@ export default function Skills() {
           letter-spacing: 0.06em;
           color: #16C172;
           background: rgba(22,193,114,0.08);
-          padding: 4px 10px;
+          padding: 5px 12px;
           border-radius: 3px;
+          border: 1px solid rgba(22,193,114,0.15);
+          transition: background 0.2s;
         }
+        .spec-tag:hover { background: rgba(22,193,114,0.15); }
+
+        /* Corner decoration */
+        .spec-corner {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          color: rgba(22,193,114,0.25);
+          letter-spacing: 0.1em;
+          animation: cornerBlink 4s infinite;
+        }
+
         @media (max-width: 900px) {
-          .spec-grid { grid-template-columns: 1fr; }
+          .spec-showcase { grid-template-columns: 1fr; }
+          .spec-showcase-left {
+            flex-direction: row;
+            align-items: center;
+            padding: 24px 28px;
+            border-right: none;
+            border-bottom: 1px solid rgba(22,193,114,0.08);
+          }
+          .spec-showcase-left::after { display: none; }
+          .spec-left-id { display: none; }
+          .spec-icon-wrap { margin-bottom: 0; margin-right: 16px; }
           .skills-grid { grid-template-columns: 1fr; gap: 16px; }
           .skills-header { flex-direction: column; align-items: flex-start; gap: 16px; }
           .skills-subtext { text-align: left; }
@@ -300,6 +503,7 @@ export default function Skills() {
         @media (max-width: 768px) {
           .skills { padding: 100px 0; }
           .skills-inner { padding: 0 24px; }
+          .spec-showcase-right { padding: 28px 24px; }
         }
       `}</style>
 
@@ -345,32 +549,87 @@ export default function Skills() {
             ))}
           </div>
 
-          {/* Specializations */}
-          <p className="spec-heading reveal" data-reveal>// Specialization Areas</p>
-          <div className="spec-grid" tabIndex={0} style={{ position: 'relative' }}>
-            {SPECIALIZATIONS.map((spec, i) => (
-              <div key={spec.title} className="spec-card reveal" data-reveal style={{ transitionDelay: `${i * 100}ms` }}>
-                <span
-                  className="spec-icon"
-                  tabIndex={0}
-                  role="button"
-                  aria-label={spec.title}
-                  title={spec.title}
-                  style={{ color: '#16C172', filter: 'drop-shadow(0 0 8px #16C17244)', transition: 'transform 0.2s, filter 0.2s', cursor: 'pointer' }}
-                  onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.18) rotate(-8deg)'; e.currentTarget.style.filter = 'drop-shadow(0 0 16px #16C17299)'; }}
-                  onMouseOut={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.filter = 'drop-shadow(0 0 8px #16C17244)'; }}
-                  onFocus={e => { e.currentTarget.style.transform = 'scale(1.18) rotate(-8deg)'; e.currentTarget.style.filter = 'drop-shadow(0 0 16px #16C17299)'; }}
-                  onBlur={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.filter = 'drop-shadow(0 0 8px #16C17244)'; }}
+          {/* ── Specializations ── */}
+          <div className="spec-section-top reveal" data-reveal>
+            <p className="spec-heading">
+              <RiTerminalBoxLine size={14} />
+              // Specialization Areas
+            </p>
+            <div className="spec-nav-group">
+              <button className="scanline-btn" onClick={prev} aria-label="Previous">
+                <FiChevronLeft />
+              </button>
+              <span className="spec-counter">
+                <span>{String(activeSpec + 1).padStart(2, '0')}</span>
+                &nbsp;/&nbsp;
+                {String(SPECIALIZATIONS.length).padStart(2, '0')}
+              </span>
+              <button className="scanline-btn" onClick={next} aria-label="Next">
+                <FiChevronRight />
+              </button>
+            </div>
+          </div>
+
+          {/* Main Showcase Card */}
+          <div className="spec-showcase reveal" data-reveal>
+            <div
+              className="spec-showcase-left"
+              style={{ background: `${spec.accentColor}08` }}
+            >
+              <div>
+                <div
+                  className="spec-icon-wrap"
+                  style={{
+                    color: spec.accentColor,
+                    borderColor: `${spec.accentColor}33`,
+                    background: `${spec.accentColor}10`,
+                    boxShadow: `0 0 20px ${spec.accentColor}22`,
+                  }}
                 >
-                  {spec.icon && <spec.icon />}
-                </span>
-                <div className="spec-title">{spec.title}</div>
-                <p className="spec-desc">{spec.desc}</p>
-                <div className="spec-tags">
-                  {spec.tags.map(t => <span key={t} className="spec-tag">{t}</span>)}
+                  <SpecIcon />
+                </div>
+                <div className="spec-stat-block">
+                  <div className="spec-stat-number" style={{ color: spec.accentColor }}>
+                    {spec.stat}
+                  </div>
+                  <div className="spec-stat-label">{spec.statLabel}</div>
                 </div>
               </div>
-            ))}
+              <div>
+                <div className="spec-dots" style={{ marginTop: 32 }}>
+                  {SPECIALIZATIONS.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`spec-dot ${i === activeSpec ? 'active' : ''}`}
+                      onClick={() => goTo(i)}
+                      aria-label={`Go to specialization ${i + 1}`}
+                      style={i === activeSpec ? { background: spec.accentColor, borderColor: spec.accentColor } : {}}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="spec-left-id">{spec.id}</div>
+            </div>
+
+            <div className="spec-showcase-right">
+              <div key={activeSpec} className="spec-card-content">
+                <div className="spec-card-title">{spec.title}</div>
+                <p className="spec-card-desc">{spec.desc}</p>
+                <div className="spec-tags">
+                  {spec.tags.map(t => (
+                    <span
+                      key={t}
+                      className="spec-tag"
+                      style={{ color: spec.accentColor, background: `${spec.accentColor}10`, borderColor: `${spec.accentColor}25` }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="spec-corner">SYS_ACTIVE</div>
           </div>
         </div>
       </section>
