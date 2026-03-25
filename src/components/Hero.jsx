@@ -246,8 +246,7 @@ function KonamiOverlay({ onClose }) {
   }, [])
 
   // User info
-  const name = 'Keith Wilhelm Felipe'
-  const birthday = 'April 24, 2002'
+  const birthYear = '2002'
   const comebackMsg = `Comeback at ${daysUntilBirthday()} days from now.`
 
   return (
@@ -286,11 +285,10 @@ function KonamiOverlay({ onClose }) {
           }}>{ln}</div>
         ))}
         {done && (
-          <div style={{marginTop: 18, marginBottom: 18}}>
-            <div><b>Name:</b> {name}</div>
-            <div><b>Birthday:</b> {birthday}</div>
-            <div><b>Random Fact:</b> {fact}</div>
-            <div style={{marginTop: 10, color:'#7A9E8C', fontSize:12}}>{comebackMsg} {/* Don't let them know it's my birthday */}</div>
+          <div style={{marginTop: 18, marginBottom: 18, fontFamily: "'JetBrains Mono', monospace", color: '#16C172'}}>
+            <div style={{marginBottom: 8}}>&gt; BIRTH YEAR: 2002</div>
+            <div style={{marginBottom: 8}}>&gt; RANDOM FACT: {fact}</div>
+            <div style={{marginTop: 10, color:'#7A9E8C', fontSize:12}}>&gt; {comebackMsg} {/* Don't let them know it's my birthday */}</div>
           </div>
         )}
         {done && (
@@ -642,15 +640,47 @@ export default function Hero() {
       `}</style>
 
 
-      {/* Debug overlay for Konami code buffer */}
-      <div style={{position:'fixed',bottom:10,right:10,zIndex:9999,background:'rgba(22,193,114,0.13)',color:'#16C172',fontFamily:'monospace',fontSize:12,padding:'6px 12px',borderRadius:6,boxShadow:'0 0 8px #16C17222'}}>
-        <div><b>Konami Buffer:</b> [{konamiBuf.join(', ')}]</div>
-        <div style={{fontSize:10,opacity:0.7}}>Type: ↑ ↑ ↓ ↓ ← → ← → B A</div>
-      </div>
 
-      {/* Konami code hint */}
-      <div style={{position:'fixed',top:18,left:18,zIndex:999,background:'rgba(22,193,114,0.08)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:11,padding:'7px 16px',borderRadius:5,boxShadow:'0 0 8px #16C17222',opacity:0.7}}>
-        <span style={{letterSpacing:'0.12em'}}>Psst... Try the classic code: ↑ ↑ ↓ ↓ ← → ← → B A</span>
+      {/* Ten very subtle, scattered Konami code hints */}
+      {/* Hint 1: Top left, vague */}
+      <div style={{position:'fixed',top:12,left:12,zIndex:999,background:'rgba(22,193,114,0.04)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'3px 10px',borderRadius:4,opacity:0.32,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Patterns unlock secrets.</span>
+      </div>
+      {/* Hint 2: Bottom left, tiny */}
+      <div style={{position:'fixed',bottom:8,left:18,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.22,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Not all keys are visible.</span>
+      </div>
+      {/* Hint 3: Near scroll hint */}
+      <div style={{position:'absolute',bottom:70,left:40,zIndex:999,background:'rgba(22,193,114,0.06)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'4px 10px',borderRadius:4,opacity:0.18,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Try a classic sequence.</span>
+      </div>
+      {/* Hint 4: Near name, very subtle */}
+      <div style={{position:'absolute',top:110,left:60,zIndex:999,background:'rgba(22,193,114,0.04)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 8px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
+        <span>↑ ↑ ...</span>
+      </div>
+      {/* Hint 5: Top right, cryptic */}
+      <div style={{position:'fixed',top:16,right:22,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'2px 8px',borderRadius:3,opacity:0.19,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Some codes are legendary.</span>
+      </div>
+      {/* Hint 6: Bottom right, tiny */}
+      <div style={{position:'fixed',bottom:12,right:18,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Old school unlocks.</span>
+      </div>
+      {/* Hint 7: Middle left, faint */}
+      <div style={{position:'fixed',top:'48%',left:10,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.11,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Up, up, ...</span>
+      </div>
+      {/* Hint 8: Middle right, faint */}
+      <div style={{position:'fixed',top:'52%',right:10,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.11,boxShadow:'none',pointerEvents:'none'}}>
+        <span>...down, down</span>
+      </div>
+      {/* Hint 9: Above hero actions, cryptic */}
+      <div style={{position:'absolute',bottom:160,left:60,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
+        <span>Left, right, left, right...</span>
+      </div>
+      {/* Hint 10: Near stats, final nudge */}
+      <div style={{position:'absolute',right:60,bottom:180,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
+        <span>B, A</span>
       </div>
 
       {showKonami && <KonamiOverlay onClose={() => setShowKonami(false)} />}
