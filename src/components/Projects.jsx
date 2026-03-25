@@ -373,9 +373,12 @@ export default function Projects() {
           max-width: 500px;
         }
         .projects-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          display: flex;
+          flex-direction: row;
           gap: 16px;
+          overflow-x: auto;
+          padding-bottom: 8px;
+          scrollbar-width: thin;
         }
         @media (max-width: 1024px) {
           .projects-grid { grid-template-columns: 1fr 1fr; }

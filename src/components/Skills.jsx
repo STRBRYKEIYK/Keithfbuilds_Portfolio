@@ -38,6 +38,12 @@ const SPECIALIZATIONS = [
     tags: ['State Machine', 'Dashboards', 'Excel Export', 'TypeScript'],
     icon: FaMoneyCheckAlt,
   },
+  {
+    title: 'Ingestion & Document Automation',
+    desc: 'Backend service for automated document ingestion, OCR, and data extraction. Handles PDFs, images, spreadsheets, and Word docs with multi-provider OCR and secure API endpoints. Integrates with enterprise workflows.',
+    tags: ['Express', 'TypeScript', 'Python', 'OCR', 'API', 'Data Automation'],
+    icon: FaMoneyCheckAlt,
+  },
 ]
 
 export default function Skills() {
@@ -217,9 +223,12 @@ export default function Skills() {
           margin-bottom: 24px;
         }
         .spec-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          display: flex;
+          flex-direction: row;
           gap: 16px;
+          overflow-x: auto;
+          padding-bottom: 8px;
+          scrollbar-width: thin;
         }
         .spec-card {
           background: var(--bg-card);
