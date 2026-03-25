@@ -377,8 +377,13 @@ export default function Projects() {
           flex-direction: row;
           gap: 16px;
           overflow-x: auto;
+          scroll-snap-type: x mandatory;
           padding-bottom: 8px;
-          scrollbar-width: thin;
+        }
+        .project-card {
+          scroll-snap-align: start;
+          min-width: 360px;
+          flex: 0 0 360px;
         }
         @media (max-width: 1024px) {
           .projects-grid { grid-template-columns: 1fr 1fr; }
@@ -401,7 +406,7 @@ export default function Projects() {
             </h2>
           </div>
 
-          <div className="projects-grid">
+          <div className="projects-grid" tabIndex={0} style={{ position: 'relative' }}>
             {PROJECTS.map((project, i) => (
               <ProjectCard key={project.num} project={project} index={i} />
             ))}

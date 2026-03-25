@@ -227,8 +227,13 @@ export default function Skills() {
           flex-direction: row;
           gap: 16px;
           overflow-x: auto;
+          scroll-snap-type: x mandatory;
           padding-bottom: 8px;
-          scrollbar-width: thin;
+        }
+        .spec-card {
+          scroll-snap-align: start;
+          min-width: 320px;
+          flex: 0 0 320px;
         }
         .spec-card {
           background: var(--bg-card);
@@ -342,7 +347,7 @@ export default function Skills() {
 
           {/* Specializations */}
           <p className="spec-heading reveal" data-reveal>// Specialization Areas</p>
-          <div className="spec-grid">
+          <div className="spec-grid" tabIndex={0} style={{ position: 'relative' }}>
             {SPECIALIZATIONS.map((spec, i) => (
               <div key={spec.title} className="spec-card reveal" data-reveal style={{ transitionDelay: `${i * 100}ms` }}>
                 <span
