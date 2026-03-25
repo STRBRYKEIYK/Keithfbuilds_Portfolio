@@ -125,20 +125,30 @@ function useScramble(finalText, trigger) {
   return display
 }
 
-/** Konami code detector — fires cb once per sequence. */
-function useKonami(cb) {
+/** Konami code detector — fires cb once per sequence. Debug overlay support. Resets buffer on wrong key. */
+function useKonami(cb, debug) {
   const buf = useRef([])
   useEffect(() => {
     const onKey = (e) => {
-      buf.current = [...buf.current.slice(-(KONAMI.length - 1)), e.key]
-      if (buf.current.join(',') === KONAMI.join(',')) {
+      let key = e.key
+      if (key.length === 1) key = key.toLowerCase()
+      const idx = buf.current.length
+      if (key === KONAMI[idx]) {
+        buf.current = [...buf.current, key]
+      } else if (key === KONAMI[0]) {
+        buf.current = [key]
+      } else {
+        buf.current = []
+      }
+      if (debug) debug(buf.current.slice())
+      if (buf.current.length === KONAMI.length && buf.current.join(',') === KONAMI.join(',')) {
         buf.current = []
         cb()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [cb])
+  }, [cb, debug])
 }
 
 /** Canvas dot grid with mouse-proximity glow. */
@@ -198,11 +208,31 @@ function useDotGrid(ref) {
 
 // ─── Konami Overlay ───────────────────────────────────────────────────────────
 
+// Facts for randomization
+const KONAMI_FACTS = [
+  'Our first pet was a pigeon.',
+  'Our second pet was a duck named after a DOTA character.',
+  'I love Strawberry.',
+  'I have a dimple.',
+  'German and Spanish lineage.',
+]
+
+function daysUntilBirthday() {
+  const now = new Date()
+  const year = now.getMonth() > 3 || (now.getMonth() === 3 && now.getDate() > 24) ? now.getFullYear() + 1 : now.getFullYear()
+  const bday = new Date(year, 3, 24)
+  const diff = Math.ceil((bday - now) / (1000 * 60 * 60 * 24))
+  return diff
+}
+
 function KonamiOverlay({ onClose }) {
   const [lines, setLines] = useState([])
   const [done, setDone] = useState(false)
+  const [fact, setFact] = useState('')
 
   useEffect(() => {
+    // Pick a random fact each time
+    setFact(KONAMI_FACTS[Math.floor(Math.random() * KONAMI_FACTS.length)])
     let i = 0
     const id = setInterval(() => {
       setLines(prev => [...prev, BOOT_LINES[i]])
@@ -214,6 +244,11 @@ function KonamiOverlay({ onClose }) {
     }, 270)
     return () => clearInterval(id)
   }, [])
+
+  // User info
+  const name = 'Keith Wilhelm Felipe'
+  const birthday = 'April 24, 2002'
+  const comebackMsg = `Comeback at ${daysUntilBirthday()} days from now.`
 
   return (
     <div style={{
@@ -251,10 +286,18 @@ function KonamiOverlay({ onClose }) {
           }}>{ln}</div>
         ))}
         {done && (
+          <div style={{marginTop: 18, marginBottom: 18}}>
+            <div><b>Name:</b> {name}</div>
+            <div><b>Birthday:</b> {birthday}</div>
+            <div><b>Random Fact:</b> {fact}</div>
+            <div style={{marginTop: 10, color:'#7A9E8C', fontSize:12}}>{comebackMsg} {/* Don't let them know it's my birthday */}</div>
+          </div>
+        )}
+        {done && (
           <button
             onClick={onClose}
             style={{
-              marginTop: 28, width: '100%', padding: '13px 0',
+              marginTop: 10, width: '100%', padding: '13px 0',
               background: 'rgba(22,193,114,0.08)',
               border: '1px solid rgba(22,193,114,0.35)',
               borderRadius: 4, color: '#16C172',
@@ -276,11 +319,13 @@ function KonamiOverlay({ onClose }) {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
+
 export default function Hero() {
   const canvasRef = useRef(null)
   const [scrambleTrigger, setScrambleTrigger] = useState(false)
   const [showKonami, setShowKonami] = useState(false)
   const [glitch, setGlitch] = useState(false)
+  const [konamiBuf, setKonamiBuf] = useState([])
 
   // Birthday easter egg
   const today = new Date()
@@ -295,7 +340,7 @@ export default function Hero() {
   useDotGrid(canvasRef)
 
   const openKonami = useCallback(() => setShowKonami(true), [])
-  useKonami(openKonami)
+  useKonami(openKonami, setKonamiBuf)
 
   // Boot scramble
   useEffect(() => {
@@ -595,6 +640,18 @@ export default function Hero() {
           .hero-scroll   { left:24px; }
         }
       `}</style>
+
+
+      {/* Debug overlay for Konami code buffer */}
+      <div style={{position:'fixed',bottom:10,right:10,zIndex:9999,background:'rgba(22,193,114,0.13)',color:'#16C172',fontFamily:'monospace',fontSize:12,padding:'6px 12px',borderRadius:6,boxShadow:'0 0 8px #16C17222'}}>
+        <div><b>Konami Buffer:</b> [{konamiBuf.join(', ')}]</div>
+        <div style={{fontSize:10,opacity:0.7}}>Type: ↑ ↑ ↓ ↓ ← → ← → B A</div>
+      </div>
+
+      {/* Konami code hint */}
+      <div style={{position:'fixed',top:18,left:18,zIndex:999,background:'rgba(22,193,114,0.08)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:11,padding:'7px 16px',borderRadius:5,boxShadow:'0 0 8px #16C17222',opacity:0.7}}>
+        <span style={{letterSpacing:'0.12em'}}>Psst... Try the classic code: ↑ ↑ ↓ ↓ ← → ← → B A</span>
+      </div>
 
       {showKonami && <KonamiOverlay onClose={() => setShowKonami(false)} />}
 
