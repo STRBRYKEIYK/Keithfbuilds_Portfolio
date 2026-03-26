@@ -49,6 +49,10 @@ export default function Cursor() {
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mousedown', onDown)
       window.removeEventListener('mouseup', onUp)
+      interactives.forEach((el) => {
+        el.removeEventListener('mouseenter', addHover)
+        el.removeEventListener('mouseleave', removeHover)
+      })
       cancelAnimationFrame(rafRef.current)
     }
   }, [])

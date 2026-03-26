@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useScrollSpy from '../hooks/useScrollSpy'
 
 const navLinks = [
   { label: 'About', href: '#about' },
@@ -7,7 +8,12 @@ const navLinks = [
   { label: 'Contact', href: '#contact' },
 ]
 
-function MagneticButton({ children, href, className }) {
+const NAV_SECTION_IDS = ['about', 'skills', 'projects', 'contact']
+
+const RESUME_FILE = 'KeithFbuilds.dev - Resume.pdf'
+const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`
+
+function MagneticButton({ children, href, className, download }) {
   const ref = useRef(null)
 
   const onMove = (e) => {
@@ -38,10 +44,14 @@ function MagneticButton({ children, href, className }) {
       onMouseLeave={onLeave}
       onMouseEnter={onEnter}
       onClick={(e) => {
+        if (!href?.startsWith('#')) return
         e.preventDefault()
         const target = document.querySelector(href)
         if (target) target.scrollIntoView({ behavior: 'smooth' })
       }}
+      download={download ? true : undefined}
+      target={href?.startsWith('#') ? undefined : '_blank'}
+      rel={href?.startsWith('#') ? undefined : 'noreferrer'}
     >
       {children}
     </a>
@@ -51,23 +61,11 @@ function MagneticButton({ children, href, className }) {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('')
+  const activeSection = useScrollSpy(NAV_SECTION_IDS, { referenceTopPx: 120 })
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 60)
-
-      const sections = ['about', 'skills', 'projects', 'contact']
-      for (const id of sections) {
-        const el = document.getElementById(id)
-        if (el) {
-          const rect = el.getBoundingClientRect()
-          if (rect.top <= 120 && rect.bottom >= 120) {
-            setActiveSection(id)
-            break
-          }
-        }
-      }
     }
 
     window.addEventListener('scroll', onScroll)
@@ -237,15 +235,20 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <MagneticButton href="#contact" className="nav-cta">
-          Hire Me
-        </MagneticButton>
+        <div className="nav-controls" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <MagneticButton href="#contact" className="nav-cta">
+            Hire Me
+          </MagneticButton>
+          <MagneticButton href={RESUME_HREF} className="nav-cta" download>
+            Resume
+          </MagneticButton>
 
-        <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-          <span />
-          <span />
-          <span />
-        </button>
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </nav>
 
       <div
@@ -261,6 +264,14 @@ export default function Navbar() {
             {link.label}
           </a>
         ))}
+        <a
+          href={RESUME_HREF}
+          download
+          onClick={() => setMenuOpen(false)}
+          rel="noreferrer"
+        >
+          Resume
+        </a>
       </div>
     </>
   )

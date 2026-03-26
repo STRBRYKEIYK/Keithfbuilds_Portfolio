@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import Carousel from './ui/Carousel/Carousel'
 import { FaStore, FaTruckMoving, FaMoneyCheckAlt, FaFileAlt } from 'react-icons/fa'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { RiTerminalBoxLine } from 'react-icons/ri'
@@ -65,54 +67,41 @@ const SPECIALIZATIONS = [
 ]
 
 export default function Skills() {
-  const sectionRef = useRef(null)
   const barsRef = useRef([])
-  const [activeSpec, setActiveSpec] = useState(0)
-  const [direction, setDirection] = useState(1)
-  const [animating, setAnimating] = useState(false)
 
-  const goTo = (idx) => {
-    if (animating) return
-    setDirection(idx > activeSpec ? 1 : -1)
-    setAnimating(true)
-    setTimeout(() => {
-      setActiveSpec(idx)
-      setAnimating(false)
-    }, 280)
-  }
-
-  const prev = () => goTo((activeSpec - 1 + SPECIALIZATIONS.length) % SPECIALIZATIONS.length)
-  const next = () => goTo((activeSpec + 1) % SPECIALIZATIONS.length)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll('[data-reveal]').forEach((el, i) => {
-              setTimeout(() => el.classList.add('visible'), i * 80)
-            })
-            barsRef.current.forEach((bar, i) => {
-              if (bar) {
-                setTimeout(() => {
-                  bar.style.width = bar.dataset.level + '%'
-                }, 400 + i * 80)
-              }
-            })
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
+  const handleIntersect = useCallback(() => {
+    // Animate the skill bars after reveal starts.
+    const timeouts = []
+    barsRef.current.forEach((bar, i) => {
+      if (!bar) return
+      const t = setTimeout(() => {
+        bar.style.width = `${bar.dataset.level}%`
+      }, 400 + i * 80)
+      timeouts.push(t)
+    })
+    return () => timeouts.forEach(clearTimeout)
   }, [])
 
-  const spec = SPECIALIZATIONS[activeSpec]
-  const SpecIcon = spec.icon
+  const sectionRef = useRevealOnScroll({
+    threshold: 0.1,
+    staggerMs: 80,
+    onIntersect: handleIntersect,
+  })
 
   return (
-    <>
+    <Carousel.Root count={SPECIALIZATIONS.length} initialIndex={0} transitionMs={280} loop>
+      <Carousel.Panel>
+        {({ activeIndex, isAnimating, goTo, goPrev, goNext }) => {
+          const activeSpec = activeIndex
+          const animating = isAnimating
+          const prev = goPrev
+          const next = goNext
+
+          const spec = SPECIALIZATIONS[activeSpec]
+          const SpecIcon = spec.icon
+
+          return (
+            <>
       <style>{`
         @keyframes ticker {
           0% { transform: translateX(0); }
@@ -634,5 +623,9 @@ export default function Skills() {
         </div>
       </section>
     </>
+        )
+        }}
+      </Carousel.Panel>
+    </Carousel.Root>
   )
 }

@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import Carousel from './ui/Carousel/Carousel'
+import ProjectVideoPlaceholder from './Projects/ProjectVideoPlaceholder'
 import { FaStore, FaTruckMoving, FaMoneyCheckAlt, FaFileAlt } from 'react-icons/fa'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { RiTerminalBoxLine } from 'react-icons/ri'
 import { BsCircleFill } from 'react-icons/bs'
+
+const VIDEO_PLACEHOLDER_GAP_PX = 14
 
 const PROJECTS = [
   {
@@ -25,6 +30,11 @@ const PROJECTS = [
     impact: '1,000+ SKUs',
     impactLabel: 'Managed',
     icon: FaStore,
+    video: {
+      src: '/videos/project-01.mp4',
+      posterLabel: 'Video coming soon',
+      posterStyle: { badgeText: 'DEMO' },
+    },
   },
   {
     num: '02',
@@ -46,6 +56,11 @@ const PROJECTS = [
     impact: 'Full Supply Chain',
     impactLabel: 'Coverage',
     icon: FaTruckMoving,
+    video: {
+      src: '/videos/project-02.mp4',
+      posterLabel: 'Video coming soon',
+      posterStyle: { badgeText: 'PREVIEW' },
+    },
   },
   {
     num: '03',
@@ -67,6 +82,11 @@ const PROJECTS = [
     impact: 'Complete ERP',
     impactLabel: 'Module',
     icon: FaMoneyCheckAlt,
+    video: {
+      src: '/videos/project-03.mp4',
+      posterLabel: 'Video coming soon',
+      posterStyle: { badgeText: 'SHOWCASE' },
+    },
   },
   {
     num: '04',
@@ -88,50 +108,31 @@ const PROJECTS = [
     impact: 'Multi-Provider',
     impactLabel: 'OCR Engine',
     icon: FaFileAlt,
+    video: {
+      src: '/videos/project-04.mp4',
+      posterLabel: 'Video coming soon',
+      posterStyle: { badgeText: 'DEMO' },
+    },
   },
 ]
 
 export default function Projects() {
-  const sectionRef = useRef(null)
-  const [active, setActive] = useState(0)
-  const [animating, setAnimating] = useState(false)
-  const [dir, setDir] = useState(1)
-
-  const goTo = (idx) => {
-    if (animating || idx === active) return
-    setDir(idx > active ? 1 : -1)
-    setAnimating(true)
-    setTimeout(() => {
-      setActive(idx)
-      setAnimating(false)
-    }, 300)
-  }
-
-  const prev = () => goTo((active - 1 + PROJECTS.length) % PROJECTS.length)
-  const next = () => goTo((active + 1) % PROJECTS.length)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll('[data-reveal]').forEach((el, i) => {
-              setTimeout(() => el.classList.add('visible'), i * 100)
-            })
-          }
-        })
-      },
-      { threshold: 0.05 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  const proj = PROJECTS[active]
-  const ProjIcon = proj.icon
-
+  const sectionRef = useRevealOnScroll({ threshold: 0.05, staggerMs: 100 })
   return (
-    <>
+    <Carousel.Root count={PROJECTS.length} initialIndex={0} transitionMs={300} loop>
+      <Carousel.Panel>
+        {({ activeIndex, direction, isAnimating, goTo, goPrev, goNext }) => {
+          const active = activeIndex
+          const dir = direction
+          const animating = isAnimating
+          const prev = goPrev
+          const next = goNext
+
+          const proj = PROJECTS[active]
+          const ProjIcon = proj.icon
+
+          return (
+            <>
       <style>{`
         @keyframes projSlideIn {
           from { opacity: 0; transform: translateX(${dir > 0 ? '30px' : '-30px'}); }
@@ -612,6 +613,14 @@ export default function Projects() {
 
                   <p className="proj-desc">{proj.desc}</p>
 
+                  <div style={{ marginBottom: VIDEO_PLACEHOLDER_GAP_PX }}>
+                    <ProjectVideoPlaceholder
+                      color={proj.color}
+                      posterLabel={proj.video?.posterLabel}
+                      badgeText={proj.video?.posterStyle?.badgeText}
+                    />
+                  </div>
+
                   <div className="proj-stack">
                     {proj.stack.map(s => (
                       <span key={s} className="stack-tag" style={{ color: proj.color, background: `${proj.color}0C`, borderColor: `${proj.color}25` }}>
@@ -693,5 +702,9 @@ export default function Projects() {
         </div>
       </section>
     </>
+        )
+        }}
+      </Carousel.Panel>
+    </Carousel.Root>
   )
 }

@@ -1,25 +1,8 @@
-import { useEffect, useRef } from 'react'
+import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import { FaBolt, FaBuilding, FaBullseye, FaGlobe } from 'react-icons/fa'
 
 export default function About() {
-  const sectionRef = useRef(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll('[data-reveal]').forEach((el, i) => {
-              setTimeout(() => el.classList.add('visible'), i * 120)
-            })
-          }
-        })
-      },
-      { threshold: 0.15 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
+  const sectionRef = useRevealOnScroll({ threshold: 0.15, staggerMs: 120 })
 
   // Use react-icons for all trait icons
   const traits = [

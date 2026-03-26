@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import useRevealOnScroll from "../hooks/useRevealOnScroll";
 import {
   FaEnvelope,
   FaPhoneAlt,
@@ -8,7 +9,7 @@ import {
 } from "react-icons/fa";
 
 export default function Contact() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRevealOnScroll({ threshold: 0.1, staggerMs: 100 });
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -16,23 +17,6 @@ export default function Contact() {
   });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll("[data-reveal]").forEach((el, i) => {
-              setTimeout(() => el.classList.add("visible"), i * 100);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();

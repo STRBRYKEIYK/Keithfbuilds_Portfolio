@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import useTypingLoop from '../hooks/hero/useTypingLoop'
+import useScramble from '../hooks/hero/useScramble'
+import useKonamiCode from '../hooks/hero/useKonamiCode'
+import useDotGrid from '../hooks/hero/useDotGrid'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&'
 
 const ROLES = [
   'Full-Stack Developer',
@@ -39,172 +41,6 @@ function getOrdinalAge(n) {
 }
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
-
-/**
- * Ref-based typing loop — zero stale-closure risk, no render-triggered re-scheduling.
- * Phases: typing → hold → deleting → gap → (next word)
- */
-function useTypingLoop(items) {
-  const [display, setDisplay] = useState('')
-  const [caretOn, setCaretOn] = useState(true)
-  // All mutable state lives in one ref — never causes extra effects
-  const machine = useRef({ idx: 0, pos: 0, phase: 'typing' })
-
-  // Blink caret independently
-  useEffect(() => {
-    const id = setInterval(() => setCaretOn(v => !v), 530)
-    return () => clearInterval(id)
-  }, [])
-
-  // Scheduling loop — only runs once on mount
-  useEffect(() => {
-    let tid
-    function tick() {
-      const s = machine.current
-      const word = items[s.idx]
-      if (s.phase === 'typing') {
-        s.pos = Math.min(s.pos + 1, word.length)
-        setDisplay(word.slice(0, s.pos))
-        tid = s.pos >= word.length
-          ? setTimeout(() => { s.phase = 'hold'; tick() }, 1800)
-          : setTimeout(tick, 68)
-      } else if (s.phase === 'hold') {
-        s.phase = 'deleting'
-        tid = setTimeout(tick, 60)
-      } else if (s.phase === 'deleting') {
-        s.pos = Math.max(s.pos - 1, 0)
-        setDisplay(word.slice(0, s.pos))
-        tid = s.pos <= 0
-          ? setTimeout(() => { s.phase = 'gap'; tick() }, 380)
-          : setTimeout(tick, 36)
-      } else { // gap
-        s.idx = (s.idx + 1) % items.length
-        s.pos = 0
-        s.phase = 'typing'
-        tid = setTimeout(tick, 80)
-      }
-    }
-    tid = setTimeout(tick, 900)
-    return () => clearTimeout(tid)
-  }, [items]) // items is stable (defined at module level)
-
-  return { display, caretOn }
-}
-
-/**
- * rAF-based scramble — resolves to finalText in ~800ms, no render-loop risk.
- */
-function useScramble(finalText, trigger) {
-  const [display, setDisplay] = useState(finalText)
-  const raf = useRef(null)
-  const progress = useRef(0)
-
-  useEffect(() => {
-    if (!trigger) { setDisplay(finalText); return }
-    progress.current = 0
-    cancelAnimationFrame(raf.current)
-    let last = 0
-    function step(ts) {
-      if (ts - last < 26) { raf.current = requestAnimationFrame(step); return }
-      last = ts
-      progress.current += 0.6
-      const p = progress.current
-      const next = finalText.split('').map((ch, i) => {
-        if (ch === ' ') return ' '
-        if (i < p) return finalText[i]
-        return CHARS[Math.floor(Math.random() * CHARS.length)]
-      }).join('')
-      setDisplay(next)
-      if (p < finalText.length) raf.current = requestAnimationFrame(step)
-      else setDisplay(finalText)
-    }
-    raf.current = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf.current)
-  }, [trigger, finalText])
-
-  return display
-}
-
-/** Konami code detector — fires cb once per sequence. Debug overlay support. Resets buffer on wrong key. */
-function useKonami(cb, debug) {
-  const buf = useRef([])
-  useEffect(() => {
-    const onKey = (e) => {
-      let key = e.key
-      if (key.length === 1) key = key.toLowerCase()
-      const idx = buf.current.length
-      if (key === KONAMI[idx]) {
-        buf.current = [...buf.current, key]
-      } else if (key === KONAMI[0]) {
-        buf.current = [key]
-      } else {
-        buf.current = []
-      }
-      if (debug) debug(buf.current.slice())
-      if (buf.current.length === KONAMI.length && buf.current.join(',') === KONAMI.join(',')) {
-        buf.current = []
-        cb()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [cb, debug])
-}
-
-/** Canvas dot grid with mouse-proximity glow. */
-function useDotGrid(ref) {
-  useEffect(() => {
-    const canvas = ref.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let rafId
-    let mouse = { x: -9999, y: -9999 }
-    let dots = []
-
-    function build() {
-      canvas.width  = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-      const STEP = 42
-      dots = []
-      const cols = Math.ceil(canvas.width  / STEP) + 1
-      const rows = Math.ceil(canvas.height / STEP) + 1
-      for (let r = 0; r < rows; r++)
-        for (let c = 0; c < cols; c++)
-          dots.push({ x: c * STEP, y: r * STEP })
-    }
-    build()
-
-    const onMove = (e) => {
-      const r = canvas.getBoundingClientRect()
-      mouse = { x: e.clientX - r.left, y: e.clientY - r.top }
-    }
-    // Track from parent section so it works even when canvas is pointer-events:none
-    const parent = canvas.parentElement
-    parent?.addEventListener('mousemove', onMove)
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      for (const d of dots) {
-        const dx = mouse.x - d.x, dy = mouse.y - d.y
-        const t = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) / 140)
-        ctx.beginPath()
-        ctx.arc(d.x, d.y, 1 + t * 2.4, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(22,193,114,${0.05 + t * 0.28})`
-        ctx.fill()
-      }
-      rafId = requestAnimationFrame(draw)
-    }
-    draw()
-
-    const onResize = () => build()
-    window.addEventListener('resize', onResize)
-    return () => {
-      cancelAnimationFrame(rafId)
-      parent?.removeEventListener('mousemove', onMove)
-      window.removeEventListener('resize', onResize)
-    }
-  }, [ref])
-}
 
 // ─── Konami Overlay ───────────────────────────────────────────────────────────
 
@@ -323,7 +159,6 @@ export default function Hero() {
   const [scrambleTrigger, setScrambleTrigger] = useState(false)
   const [showKonami, setShowKonami] = useState(false)
   const [glitch, setGlitch] = useState(false)
-  const [konamiBuf, setKonamiBuf] = useState([])
 
   // Birthday easter egg
   const today = new Date()
@@ -338,7 +173,7 @@ export default function Hero() {
   useDotGrid(canvasRef)
 
   const openKonami = useCallback(() => setShowKonami(true), [])
-  useKonami(openKonami, setKonamiBuf)
+  useKonamiCode({ sequence: KONAMI, onComplete: openKonami })
 
   // Boot scramble
   useEffect(() => {

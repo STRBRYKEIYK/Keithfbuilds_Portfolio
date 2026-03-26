@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
+import useBootLoader from "./hooks/useBootLoader";
+import useSmoothLenis from "./hooks/useSmoothLenis";
 import Cursor from "./components/Cursor";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -18,42 +20,12 @@ const BOOT_LINES = [
 ];
 
 function Loader({ onDone }) {
-  const [progress, setProgress] = useState(0);
-  const [leaving, setLeaving] = useState(false);
-  const [visibleLines, setVisibleLines] = useState([]);
-
-  // Progress bar — pace progress to finish exactly at 2.5s
-  const mountTimeRef = useRef(Date.now());
-
-  useEffect(() => {
-    const DURATION = 2500; // ms
-    let rafId = null;
-
-    function tick() {
-      const elapsed = Date.now() - mountTimeRef.current;
-      const pct = Math.min(100, (elapsed / DURATION) * 100);
-      setProgress(pct);
-
-      if (pct < 100) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        // reach 100% exactly at DURATION, then start leave animation immediately
-        setLeaving(true);
-        setTimeout(onDone, 700); // match CSS transition duration
-      }
-    }
-
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [onDone]);
-
-  // Stagger boot log lines based on progress
-  useEffect(() => {
-    const lineIndex = Math.floor((progress / 100) * BOOT_LINES.length);
-    setVisibleLines(BOOT_LINES.slice(0, lineIndex));
-  }, [progress]);
+  const { progress, leaving, visibleLines } = useBootLoader({
+    bootLines: BOOT_LINES,
+    onDone,
+    durationMs: 2500,
+    leaveDelayMs: 700,
+  });
 
   return (
     <div
@@ -300,28 +272,7 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
 
   // Smooth scroll init with Lenis
-  useEffect(() => {
-    if (!loaded) return;
-    let lenis;
-    import("lenis").then(({ default: Lenis }) => {
-      lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: "vertical",
-        smoothWheel: true,
-      });
-
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
-    });
-
-    return () => {
-      if (lenis) lenis.destroy();
-    };
-  }, [loaded]);
+  useSmoothLenis(loaded);
 
   return (
     <>
