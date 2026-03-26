@@ -39,7 +39,7 @@ function MagneticButton({ children, href, className, download }) {
     <a
       ref={ref}
       href={href}
-      className={className}
+      className={`${className ?? ''} focus-ring`}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       onMouseEnter={onEnter}
@@ -62,6 +62,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const activeSection = useScrollSpy(NAV_SECTION_IDS, { referenceTopPx: 120 })
+  const hamburgerRef = useRef(null)
+  const MOBILE_MENU_ID = 'mobile-menu'
 
   useEffect(() => {
     const onScroll = () => {
@@ -71,6 +73,28 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    if (!menuOpen) {
+      // Return focus to hamburger when closing the menu.
+      hamburgerRef.current?.focus?.()
+      return
+    }
+
+    // Move focus to the first mobile link when opening.
+    const firstLink = document.querySelector(`#${MOBILE_MENU_ID} a`)
+    firstLink?.focus?.()
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKeyDown = (e) => {
+      if (e.key !== 'Escape') return
+      setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen])
 
   return (
     <>
@@ -223,7 +247,7 @@ export default function Navbar() {
               <a
                 href={link.href}
                 data-num={`0${i+1}.`}
-                className={activeSection === link.href.slice(1) ? 'active' : ''}
+                className={`focus-ring ${activeSection === link.href.slice(1) ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
                   document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' })
@@ -243,7 +267,14 @@ export default function Navbar() {
             Resume
           </MagneticButton>
 
-          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+          <button
+            ref={hamburgerRef}
+            type="button"
+            className="hamburger focus-ring"
+            aria-controls={MOBILE_MENU_ID}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
             <span />
             <span />
             <span />
@@ -255,18 +286,25 @@ export default function Navbar() {
         className={`mobile-menu ${menuOpen ? 'open' : ''}`}
         aria-hidden={!menuOpen}
         hidden={!menuOpen}
+        id={MOBILE_MENU_ID}
       >
         {navLinks.map(link => (
-          <a key={link.label} href={link.href} onClick={() => {
-            setMenuOpen(false)
-            document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' })
-          }}>
+          <a
+            key={link.label}
+            href={link.href}
+            className="focus-ring"
+            onClick={() => {
+              setMenuOpen(false)
+              document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' })
+            }}
+          >
             {link.label}
           </a>
         ))}
         <a
           href={RESUME_HREF}
           download
+          className="focus-ring"
           onClick={() => setMenuOpen(false)}
           rel="noreferrer"
         >

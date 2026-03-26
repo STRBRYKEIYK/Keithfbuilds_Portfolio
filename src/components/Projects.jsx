@@ -558,13 +558,13 @@ export default function Projects() {
               </h2>
             </div>
             <div className="proj-nav reveal" data-reveal>
-              <button className="scanline-btn" onClick={prev} aria-label="Previous project">
+              <button className="scanline-btn focus-ring" onClick={prev} aria-label="Previous project">
                 <FiChevronLeft />
               </button>
               <span className="proj-counter">
                 <span>{proj.num}</span>&nbsp;/&nbsp;{String(PROJECTS.length).padStart(2, '0')}
               </span>
-              <button className="scanline-btn" onClick={next} aria-label="Next project">
+              <button className="scanline-btn focus-ring" onClick={next} aria-label="Next project">
                 <FiChevronRight />
               </button>
             </div>
@@ -677,7 +677,7 @@ export default function Projects() {
                   return (
                     <button
                       key={p.num}
-                      className={`proj-thumb ${i === active ? 'thumb-active' : ''}`}
+                      className={`proj-thumb ${i === active ? 'thumb-active' : ''} focus-ring`}
                       onClick={() => goTo(i)}
                       aria-label={`Switch to ${p.title}`}
                       style={i === active ? { borderColor: `${p.color}45`, background: `${p.color}08` } : {}}

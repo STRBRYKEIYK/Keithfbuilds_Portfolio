@@ -545,7 +545,7 @@ export default function Skills() {
               // Specialization Areas
             </p>
             <div className="spec-nav-group">
-              <button className="scanline-btn" onClick={prev} aria-label="Previous">
+              <button className="scanline-btn focus-ring" onClick={prev} aria-label="Previous">
                 <FiChevronLeft />
               </button>
               <span className="spec-counter">
@@ -553,7 +553,7 @@ export default function Skills() {
                 &nbsp;/&nbsp;
                 {String(SPECIALIZATIONS.length).padStart(2, '0')}
               </span>
-              <button className="scanline-btn" onClick={next} aria-label="Next">
+              <button className="scanline-btn focus-ring" onClick={next} aria-label="Next">
                 <FiChevronRight />
               </button>
             </div>
@@ -589,7 +589,7 @@ export default function Skills() {
                   {SPECIALIZATIONS.map((_, i) => (
                     <button
                       key={i}
-                      className={`spec-dot ${i === activeSpec ? 'active' : ''}`}
+                      className={`spec-dot ${i === activeSpec ? 'active' : ''} focus-ring`}
                       onClick={() => goTo(i)}
                       aria-label={`Go to specialization ${i + 1}`}
                       style={i === activeSpec ? { background: spec.accentColor, borderColor: spec.accentColor } : {}}

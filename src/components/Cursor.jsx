@@ -9,7 +9,16 @@ export default function Cursor() {
   const ring = useRef({ x: -100, y: -100 })
   const rafRef = useRef(null)
 
+  const [cursorEnabled] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const coarse = window.matchMedia?.('(pointer: coarse)')?.matches
+    const touch = 'ontouchstart' in window
+    return !(coarse || touch)
+  })
+
   useEffect(() => {
+    if (!cursorEnabled) return
+
     const onMove = (e) => {
       pos.current = { x: e.clientX, y: e.clientY }
     }
@@ -56,6 +65,8 @@ export default function Cursor() {
       cancelAnimationFrame(rafRef.current)
     }
   }, [])
+
+  if (!cursorEnabled) return null
 
   return (
     <>

@@ -50,6 +50,13 @@ body {
   cursor: none !important;
 }
 
+/* Restore native cursor on coarse pointer / touch devices */
+@media (pointer: coarse), (hover: none) {
+  *, *::before, *::after {
+    cursor: auto !important;
+  }
+}
+
 /* ── NOISE GRAIN OVERLAY ── */
 body::before {
   content: '';

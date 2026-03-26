@@ -67,7 +67,57 @@ function Root({ count, initialIndex = 0, transitionMs = 300, loop = true, childr
     [activeIndex, direction, goNext, goPrev, goTo, isAnimating, loop, safeCount]
   )
 
-  return <CarouselContext.Provider value={api}>{children}</CarouselContext.Provider>
+  const ariaLabel = 'Carousel'
+
+  const onKeyDown = (e) => {
+    const t = e.target
+    const tag = t?.tagName
+    const isTypingTarget =
+      tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t?.isContentEditable
+    if (isTypingTarget) return
+
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      goPrev()
+      return
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      goNext()
+    }
+  }
+
+  return (
+    <div
+      tabIndex={0}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={ariaLabel}
+      onKeyDown={onKeyDown}
+      style={{ position: 'relative', outline: 'none' }}
+    >
+      {/* Screen-reader friendly live region for slide changes */}
+      <span
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          border: 0,
+        }}
+      >
+        {safeCount > 0 ? `Item ${activeIndex + 1} of ${safeCount}` : 'Carousel'}
+      </span>
+
+      <CarouselContext.Provider value={api}>{children}</CarouselContext.Provider>
+    </div>
+  )
 }
 
 function Panel({ children }) {

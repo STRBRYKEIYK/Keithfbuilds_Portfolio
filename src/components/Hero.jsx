@@ -65,6 +65,15 @@ function KonamiOverlay({ onClose }) {
   const [lines, setLines] = useState([])
   const [done, setDone] = useState(false)
   const [fact, setFact] = useState('')
+  const closeBtnRef = useRef(null)
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
 
   useEffect(() => {
     // Pick a random fact each time
@@ -85,14 +94,28 @@ function KonamiOverlay({ onClose }) {
   const birthYear = '2002'
   const comebackMsg = `Comeback at ${daysUntilBirthday()} days from now.`
 
+  useEffect(() => {
+    if (!done) return
+    closeBtnRef.current?.focus?.()
+  }, [done])
+
   return (
-    <div style={{
+    <div
+      className="konami-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="konami-title"
+      tabIndex={-1}
+      style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       background: 'rgba(5,10,7,0.96)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       animation: 'konamiFadeIn 0.22s ease',
-    }}>
-      <div style={{
+      }}
+    >
+      <div
+        className="konami-dialog"
+        style={{
         fontFamily: "'JetBrains Mono', monospace",
         fontSize: 13, lineHeight: 1,
         color: '#16C172',
@@ -104,13 +127,14 @@ function KonamiOverlay({ onClose }) {
         boxShadow: '0 0 60px rgba(22,193,114,0.14)',
         position: 'relative',
         overflow: 'hidden',
-      }}>
+      }}
+      >
         {/* scanlines inside overlay */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
           background: 'repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(5,10,7,0.14) 2px,rgba(5,10,7,0.14) 3px)',
         }} />
-        <div style={{ fontSize: 9, letterSpacing: '0.2em', color: '#4A6B57', marginBottom: 24, position: 'relative' }}>
+        <div id="konami-title" style={{ fontSize: 9, letterSpacing: '0.2em', color: '#4A6B57', marginBottom: 24, position: 'relative' }}>
           // KONAMI CODE DETECTED — CLASSIFIED ACCESS GRANTED
         </div>
         {lines.map((ln, i) => (
@@ -129,6 +153,8 @@ function KonamiOverlay({ onClose }) {
         )}
         {done && (
           <button
+            type="button"
+            ref={closeBtnRef}
             onClick={onClose}
             style={{
               marginTop: 10, width: '100%', padding: '13px 0',
@@ -159,6 +185,7 @@ export default function Hero() {
   const [scrambleTrigger, setScrambleTrigger] = useState(false)
   const [showKonami, setShowKonami] = useState(false)
   const [glitch, setGlitch] = useState(false)
+  const lastKonamiFocusRef = useRef(null)
 
   // Birthday easter egg
   const today = new Date()
@@ -172,8 +199,16 @@ export default function Hero() {
   const { display: roleText, caretOn } = useTypingLoop(ROLES)
   useDotGrid(canvasRef)
 
-  const openKonami = useCallback(() => setShowKonami(true), [])
+  const openKonami = useCallback(() => {
+    lastKonamiFocusRef.current = document.activeElement
+    setShowKonami(true)
+  }, [])
   useKonamiCode({ sequence: KONAMI, onComplete: openKonami })
+
+  useEffect(() => {
+    if (showKonami) return
+    lastKonamiFocusRef.current?.focus?.()
+  }, [showKonami])
 
   // Boot scramble
   useEffect(() => {
@@ -231,6 +266,24 @@ export default function Hero() {
           50% { text-shadow:-2px 0 rgba(0,200,255,0.5),  2px 0 rgba(255,80,80,0.4); }
           75% { text-shadow: 2px 0 rgba(22,193,114,0.6),-2px 0 rgba(0,200,255,0.5); }
           100%{ text-shadow: 0 0 32px rgba(22,193,114,0.3); }
+        }
+
+        /* Reduced motion: disable CSS-driven animation in hero + Konami overlay. */
+        @media (prefers-reduced-motion: reduce) {
+          .status-dot { animation: none !important; }
+          .hero-tag { animation: none !important; }
+          .hero-name-wrap { animation: none !important; }
+          .hero-name.glitch { animation: none !important; }
+          .hero-role-wrap { animation: none !important; }
+          .hero-desc { animation: none !important; }
+          .hero-actions { animation: none !important; }
+          .name-scan::after { animation: none !important; }
+          .scroll-line::after { animation: none !important; }
+          .bday-banner { animation: none !important; }
+          .konami-overlay, .konami-overlay * {
+            animation: none !important;
+            transition: none !important;
+          }
         }
 
         .hero {
