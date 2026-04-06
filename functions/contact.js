@@ -214,6 +214,86 @@ function clean(value) {
   return String(value ?? "").trim();
 }
 
+function hasResendConfig() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_TO_EMAIL);
+}
+
+function hasSmtpConfig() {
+  const hasGmail = Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
+  const hasGeneric = Boolean(
+    process.env.SMTP_HOST &&
+      process.env.SMTP_PORT &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+  );
+  return hasGmail || hasGeneric;
+}
+
+async function sendViaResend({ name, email, message, toEmail, fromEmail }) {
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      reply_to: email,
+      subject: `New portfolio inquiry from ${name}`,
+      text: [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        "",
+        "Message:",
+        message,
+      ].join("\n"),
+    }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data?.message || "Mail provider rejected the request.");
+  }
+}
+
+async function sendViaSmtp({ name, email, message, toEmail, fromEmail }) {
+  const nodemailer = await import("nodemailer");
+
+  const isGmail = Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
+  const transporter = isGmail
+    ? nodemailer.default.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      })
+    : nodemailer.default.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: String(process.env.SMTP_SECURE || "false") === "true",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: toEmail,
+    replyTo: email,
+    subject: `New portfolio inquiry from ${name}`,
+    text: [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      "",
+      "Message:",
+      message,
+    ].join("\n"),
+  });
+}
+
 export async function handler(event) {
   const requestStart = Date.now();
   const requestId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -308,56 +388,51 @@ export async function handler(event) {
     });
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_TO_EMAIL;
-  const fromEmail = process.env.CONTACT_FROM_EMAIL || "Portfolio Contact <onboarding@resend.dev>";
+  const defaultFrom = process.env.GMAIL_USER
+    ? `Portfolio Contact <${process.env.GMAIL_USER}>`
+    : "Portfolio Contact <onboarding@resend.dev>";
+  const fromEmail = process.env.CONTACT_FROM_EMAIL || defaultFrom;
 
-  if (!resendApiKey || !toEmail) {
+  if (!toEmail) {
     await incrementSummary("failure");
-    logEvent("error", "service_not_configured", { requestId, ipRef, requestOrigin });
+    logEvent("error", "service_not_configured", {
+      requestId,
+      ipRef,
+      requestOrigin,
+      reason: "missing CONTACT_TO_EMAIL",
+    });
     return json(503, {
-      error: "Contact service is not configured yet. Please email me directly at keithfelipe024@gmail.com.",
+      error: "Contact service is not configured yet. Missing CONTACT_TO_EMAIL.",
+    }, responseOrigin, {
+      "X-Request-Id": requestId,
+    });
+  }
+
+  if (!hasResendConfig() && !hasSmtpConfig()) {
+    await incrementSummary("failure");
+    logEvent("error", "service_not_configured", {
+      requestId,
+      ipRef,
+      requestOrigin,
+      reason: "no provider configured",
+    });
+    return json(503, {
+      error:
+        "Contact service is not configured yet. Configure RESEND_API_KEY or Gmail/SMTP credentials.",
     }, responseOrigin, {
       "X-Request-Id": requestId,
     });
   }
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        reply_to: email,
-        subject: `New portfolio inquiry from ${name}`,
-        text: [
-          `Name: ${name}`,
-          `Email: ${email}`,
-          "",
-          "Message:",
-          message,
-        ].join("\n"),
-      }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      await incrementSummary("failure");
-      logEvent("error", "mail_provider_rejected", {
-        requestId,
-        ipRef,
-        requestOrigin,
-        providerMessage: data?.message || null,
-      });
-      return json(502, {
-        error: data?.message || "Mail provider rejected the request.",
-      }, responseOrigin, {
-        "X-Request-Id": requestId,
-      });
+    let provider = "none";
+    if (hasResendConfig()) {
+      provider = "resend";
+      await sendViaResend({ name, email, message, toEmail, fromEmail });
+    } else {
+      provider = "smtp";
+      await sendViaSmtp({ name, email, message, toEmail, fromEmail });
     }
 
     await incrementSummary("success");
@@ -371,6 +446,7 @@ export async function handler(event) {
       durationMs: Date.now() - requestStart,
       rateRemaining: limiter.remaining,
       rateSource: limiter.source,
+      provider,
     });
 
     return json(200, { ok: true }, responseOrigin, {
@@ -379,13 +455,14 @@ export async function handler(event) {
       "X-RateLimit-Source": limiter.source,
       "X-Request-Id": requestId,
     });
-  } catch {
+  } catch (error) {
     await incrementSummary("failure");
     logEvent("error", "submission_failed", {
       requestId,
       ipRef,
       requestOrigin,
       durationMs: Date.now() - requestStart,
+      providerMessage: error?.message || null,
     });
     return json(500, { error: "Unable to send the message right now." }, responseOrigin, {
       "X-Request-Id": requestId,

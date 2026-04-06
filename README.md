@@ -122,6 +122,13 @@ In `src/index.css`, update:
 
 The contact form now submits to `/api/contact`, which redirects to the Netlify-style serverless function at `functions/contact.js`.
 
+Local setup quick start:
+- copy `.env.example` to `.env.local`
+- set `CONTACT_TO_EMAIL`
+- choose one provider:
+   - Resend: set `RESEND_API_KEY`
+   - Gmail (free): set `GMAIL_USER` + `GMAIL_APP_PASSWORD`
+
 Set these environment variables in your hosting provider:
 - `RESEND_API_KEY`
 - `CONTACT_TO_EMAIL`
@@ -144,6 +151,12 @@ Anti-spam protections included:
 - per-IP rate limiting
 - server-side submission/event logging
 - optional distributed limits/counters with Upstash Redis
+
+Free Gmail option:
+- Enable 2-Step Verification on your Google account.
+- Create an App Password in Google Security settings.
+- Put that value in `GMAIL_APP_PASSWORD`.
+- Set `GMAIL_USER` to the same Gmail address.
 
 Admin summary endpoint:
 - `GET /api/contact-summary?date=YYYY-MM-DD`
