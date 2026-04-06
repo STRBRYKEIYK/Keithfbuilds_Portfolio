@@ -50,8 +50,8 @@ function MagneticButton({ children, href, className, download }) {
         if (target) target.scrollIntoView({ behavior: 'smooth' })
       }}
       download={download ? true : undefined}
-      target={href?.startsWith('#') ? undefined : '_blank'}
-      rel={href?.startsWith('#') ? undefined : 'noreferrer'}
+      target={href?.startsWith('#') || download ? undefined : '_blank'}
+      rel={href?.startsWith('#') || download ? undefined : 'noreferrer'}
     >
       {children}
     </a>
@@ -273,6 +273,7 @@ export default function Navbar() {
             className="hamburger focus-ring"
             aria-controls={MOBILE_MENU_ID}
             aria-expanded={menuOpen}
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             onClick={() => setMenuOpen((v) => !v)}
           >
             <span />

@@ -8,6 +8,7 @@ export default function Cursor() {
   const pos = useRef({ x: -100, y: -100 })
   const ring = useRef({ x: -100, y: -100 })
   const rafRef = useRef(null)
+  const clickedRef = useRef(false)
 
   const [cursorEnabled] = useState(() => {
     if (typeof window === 'undefined') return true
@@ -19,16 +20,25 @@ export default function Cursor() {
   useEffect(() => {
     if (!cursorEnabled) return
 
+    document.body.classList.add('custom-cursor-enabled')
+
     const onMove = (e) => {
       pos.current = { x: e.clientX, y: e.clientY }
     }
 
-    const onDown = () => setClicked(true)
-    const onUp = () => setClicked(false)
+    const onDown = () => {
+      clickedRef.current = true
+      setClicked(true)
+    }
+    const onUp = () => {
+      clickedRef.current = false
+      setClicked(false)
+    }
 
     const animate = () => {
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${pos.current.x - 4}px, ${pos.current.y - 4}px)`
+        const scale = clickedRef.current ? 0.7 : 1
+        dotRef.current.style.transform = `translate(${pos.current.x - 4}px, ${pos.current.y - 4}px) scale(${scale})`
       }
       // smooth lag for ring
       ring.current.x += (pos.current.x - ring.current.x) * 0.12
@@ -39,32 +49,30 @@ export default function Cursor() {
       rafRef.current = requestAnimationFrame(animate)
     }
 
-    // Detect hover on interactive elements
-    const addHover = () => setHovered(true)
-    const removeHover = () => setHovered(false)
-
-    const interactives = document.querySelectorAll('a, button, [data-cursor]')
-    interactives.forEach(el => {
-      el.addEventListener('mouseenter', addHover)
-      el.addEventListener('mouseleave', removeHover)
-    })
+    const onOver = (e) => {
+      if (e.target.closest('a, button, [data-cursor]')) setHovered(true)
+    }
+    const onOut = (e) => {
+      if (e.target.closest('a, button, [data-cursor]')) setHovered(false)
+    }
 
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mousedown', onDown)
     window.addEventListener('mouseup', onUp)
+    document.addEventListener('mouseover', onOver)
+    document.addEventListener('mouseout', onOut)
     rafRef.current = requestAnimationFrame(animate)
 
     return () => {
+      document.body.classList.remove('custom-cursor-enabled')
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mousedown', onDown)
       window.removeEventListener('mouseup', onUp)
-      interactives.forEach((el) => {
-        el.removeEventListener('mouseenter', addHover)
-        el.removeEventListener('mouseleave', removeHover)
-      })
+      document.removeEventListener('mouseover', onOver)
+      document.removeEventListener('mouseout', onOut)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  }, [cursorEnabled])
 
   if (!cursorEnabled) return null
 
@@ -104,7 +112,6 @@ export default function Cursor() {
           background: rgba(22,193,114,0.06);
         }
         .cursor-dot.clicked {
-          transform: scale(0.7) !important;
           background: #fff;
         }
       `}</style>

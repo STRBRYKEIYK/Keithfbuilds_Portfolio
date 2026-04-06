@@ -1,1 +1,4 @@
+ /api/contact   /.netlify/functions/contact   200
+ /api/contact-analytics   /.netlify/functions/contact-analytics   200
+ /api/contact-summary   /.netlify/functions/contact-summary   200
 /*    /index.html   200

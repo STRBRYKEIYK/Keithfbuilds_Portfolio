@@ -21,9 +21,9 @@
     "@tailwindcss/postcss": "^4.2.2",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
+    "javascript-obfuscator": "^5.4.1",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
-    "vite": "^8.0.2",
-    "vite-plugin-obfuscator": "^1.0.5"
+    "vite": "^8.0.2"
   }
 }

@@ -354,6 +354,12 @@ export default function Hero() {
           overflow:visible;
           text-overflow:unset;
         }
+        .hero-name-trigger {
+          border: 0;
+          background: transparent;
+          padding: 0;
+          text-align: left;
+        }
         @media (max-width: 600px) {
           .hero-name {
             font-size:clamp(22px,7vw,44px);
@@ -527,50 +533,6 @@ export default function Hero() {
         }
       `}</style>
 
-
-
-      {/* Ten very subtle, scattered Konami code hints */}
-      {/* Hint 1: Top left, vague */}
-      <div style={{position:'fixed',top:12,left:12,zIndex:999,background:'rgba(22,193,114,0.04)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'3px 10px',borderRadius:4,opacity:0.32,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Patterns unlock secrets.</span>
-      </div>
-      {/* Hint 2: Bottom left, tiny */}
-      <div style={{position:'fixed',bottom:8,left:18,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.22,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Not all keys are visible.</span>
-      </div>
-      {/* Hint 3: Near scroll hint */}
-      <div style={{position:'absolute',bottom:70,left:40,zIndex:999,background:'rgba(22,193,114,0.06)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'4px 10px',borderRadius:4,opacity:0.18,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Try a classic sequence.</span>
-      </div>
-      {/* Hint 4: Near name, very subtle */}
-      <div style={{position:'absolute',top:110,left:60,zIndex:999,background:'rgba(22,193,114,0.04)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 8px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
-        <span>↑ ↑ ...</span>
-      </div>
-      {/* Hint 5: Top right, cryptic */}
-      <div style={{position:'fixed',top:16,right:22,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:10,padding:'2px 8px',borderRadius:3,opacity:0.19,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Some codes are legendary.</span>
-      </div>
-      {/* Hint 6: Bottom right, tiny */}
-      <div style={{position:'fixed',bottom:12,right:18,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Old school unlocks.</span>
-      </div>
-      {/* Hint 7: Middle left, faint */}
-      <div style={{position:'fixed',top:'48%',left:10,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.11,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Up, up, ...</span>
-      </div>
-      {/* Hint 8: Middle right, faint */}
-      <div style={{position:'fixed',top:'52%',right:10,zIndex:999,background:'rgba(22,193,114,0.02)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.11,boxShadow:'none',pointerEvents:'none'}}>
-        <span>...down, down</span>
-      </div>
-      {/* Hint 9: Above hero actions, cryptic */}
-      <div style={{position:'absolute',bottom:160,left:60,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
-        <span>Left, right, left, right...</span>
-      </div>
-      {/* Hint 10: Near stats, final nudge */}
-      <div style={{position:'absolute',right:60,bottom:180,zIndex:999,background:'rgba(22,193,114,0.03)',color:'#16C172',fontFamily:'JetBrains Mono,monospace',fontSize:9,padding:'2px 7px',borderRadius:3,opacity:0.13,boxShadow:'none',pointerEvents:'none'}}>
-        <span>B, A</span>
-      </div>
-
       {showKonami && <KonamiOverlay onClose={() => setShowKonami(false)} />}
 
       <section className="hero">
@@ -590,13 +552,11 @@ export default function Hero() {
           </div>
 
           {/* Clickable name with scanline overlay */}
-          <div
-            className="hero-name-wrap"
+          <button
+            type="button"
+            className="hero-name-wrap hero-name-trigger"
             onClick={handleNameClick}
-            role="button"
-            tabIndex={0}
             aria-label="Click to glitch the name"
-            onKeyDown={(e) => e.key === 'Enter' && handleNameClick()}
           >
             <h1 className={`hero-name${glitch ? ' glitch' : ''}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.05}}>
               {scrambledName.split(' ').map((word, wi) => (
@@ -609,7 +569,7 @@ export default function Hero() {
             </h1>
             <div className="name-scan" aria-hidden="true" />
             <span className="name-hint" aria-hidden="true">[ click to glitch ]</span>
-          </div>
+          </button>
 
           {/* Typing role */}
           <div className="hero-role-wrap">

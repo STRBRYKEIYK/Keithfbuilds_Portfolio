@@ -1,28 +1,48 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import obfuscatorPkg from 'vite-plugin-obfuscator'
+import JavaScriptObfuscator from 'javascript-obfuscator'
 
-const obfuscator = obfuscatorPkg.default ?? obfuscatorPkg.viteObfuscateFile ?? obfuscatorPkg
+function productionObfuscationPlugin(enabled) {
+  return {
+    name: 'production-js-obfuscation',
+    apply: 'build',
+    enforce: 'post',
+    renderChunk(code, chunk) {
+      if (!enabled) return null
+      if (!chunk.fileName.endsWith('.js')) return null
+      if (!chunk.fileName.startsWith('assets/index-')) return null
 
-const shouldObfuscate = process.env.ENABLE_OBFUSCATION === 'true'
+      const result = JavaScriptObfuscator.obfuscate(code, {
+        compact: true,
+        controlFlowFlattening: false,
+        deadCodeInjection: false,
+        stringArray: true,
+        stringArrayEncoding: ['rc4'],
+        stringArrayThreshold: 0.35,
+        rotateStringArray: true,
+        splitStrings: false,
+        selfDefending: false,
+        disableConsoleOutput: true,
+        identifierNamesGenerator: 'hexadecimal',
+      })
 
-export default defineConfig({
-  plugins: [
-    react(),
-    ...(shouldObfuscate
-      ? [
-          obfuscator({
-            compact: true,
-            controlFlowFlattening: true,
-            deadCodeInjection: true,
-            stringArray: true,
-            stringArrayEncoding: ['rc4'],
-            stringArrayThreshold: 0.75,
-            rotateStringArray: true,
-            selfDefending: true,
-            disableConsoleOutput: true,
-          }),
-        ]
-      : []),
-  ],
+      return {
+        code: result.getObfuscatedCode(),
+        map: null,
+      }
+    },
+  }
+}
+
+export default defineConfig(({ mode }) => {
+  const shouldObfuscate =
+    process.env.ENABLE_OBFUSCATION === 'true' ||
+    (mode === 'production' && process.env.ENABLE_OBFUSCATION !== 'false')
+
+  return {
+    plugins: [
+      react(),
+      productionObfuscationPlugin(shouldObfuscate),
+    ],
+  }
 })

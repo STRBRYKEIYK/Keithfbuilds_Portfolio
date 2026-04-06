@@ -10,21 +10,67 @@ import {
 
 export default function Contact() {
   const sectionRef = useRevealOnScroll({ threshold: 0.1, staggerMs: 100 });
+  const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || "/api/contact";
+  const CONTACT_ANALYTICS_ENDPOINT =
+    import.meta.env.VITE_CONTACT_ANALYTICS_ENDPOINT || "/api/contact-analytics";
   const [formState, setFormState] = useState({
     name: "",
     email: "",
     message: "",
+    company: "",
   });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
+
+    try {
+      const res = await fetch(CONTACT_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          message: formState.message,
+          company: formState.company,
+        }),
+      });
+
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(payload?.error || "Unable to send message right now.");
+      }
+
+      const analyticsPayload = JSON.stringify({
+        event: "contact_submit_success",
+        source: "contact_form",
+        ts: Date.now(),
+      });
+
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(CONTACT_ANALYTICS_ENDPOINT, analyticsPayload);
+      } else {
+        fetch(CONTACT_ANALYTICS_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: analyticsPayload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+
       setSent(true);
-    }, 1800);
+      setFormState({ name: "", email: "", message: "", company: "" });
+    } catch (error) {
+      setErrorMsg(error.message || "Unable to send message right now.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const links = [
@@ -246,6 +292,26 @@ export default function Contact() {
           font-size: 13px;
           color: #7A9E8C;
         }
+        .form-error {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          color: #ff7e7e;
+          border: 1px solid rgba(255, 126, 126, 0.4);
+          background: rgba(255, 126, 126, 0.08);
+          border-radius: 6px;
+          padding: 12px 14px;
+        }
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
         @media (max-width: 900px) {
           .contact-inner {
             grid-template-columns: 1fr;
@@ -330,9 +396,31 @@ export default function Contact() {
               </div>
             ) : (
               <form className="contact-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label className="form-label">Your Name</label>
+                <div className="sr-only" aria-hidden="true">
+                  <label htmlFor="contact-company">Company</label>
                   <input
+                    id="contact-company"
+                    name="company"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formState.company}
+                    onChange={(e) =>
+                      setFormState((s) => ({ ...s, company: e.target.value }))
+                    }
+                  />
+                </div>
+
+                {errorMsg ? (
+                  <div className="form-error" role="alert">
+                    {errorMsg}
+                  </div>
+                ) : null}
+
+                <div className="form-group">
+                  <label className="form-label" htmlFor="contact-name">Your Name</label>
+                  <input
+                    id="contact-name"
                     className="form-input"
                     type="text"
                     placeholder="John Doe"
@@ -344,8 +432,9 @@ export default function Contact() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Email Address</label>
+                  <label className="form-label" htmlFor="contact-email">Email Address</label>
                   <input
+                    id="contact-email"
                     className="form-input"
                     type="email"
                     placeholder="hello@company.com"
@@ -357,8 +446,9 @@ export default function Contact() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Message</label>
+                  <label className="form-label" htmlFor="contact-message">Message</label>
                   <textarea
+                    id="contact-message"
                     className="form-textarea"
                     placeholder="Tell me about your project or opportunity..."
                     required

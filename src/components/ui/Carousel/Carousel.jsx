@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
+import { useEffect } from 'react'
 
 const CarouselContext = createContext(null)
 
@@ -35,6 +36,7 @@ function Root({ count, initialIndex = 0, transitionMs = 300, loop = true, childr
       setDirection(next > activeIndex ? 1 : -1)
       setIsAnimating(true)
 
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
       timeoutRef.current = window.setTimeout(() => {
         setActiveIndex(next)
         setIsAnimating(false)
@@ -86,6 +88,12 @@ function Root({ count, initialIndex = 0, transitionMs = 300, loop = true, childr
       goNext()
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   return (
     <div

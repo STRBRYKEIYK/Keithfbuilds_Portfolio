@@ -40,19 +40,24 @@ body {
   color: var(--text);
   font-family: var(--sans);
   overflow-x: hidden;
-  cursor: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide default cursor everywhere */
-*, *::before, *::after {
+/* Hide default cursor only while custom cursor is active. */
+body.custom-cursor-enabled,
+body.custom-cursor-enabled *,
+body.custom-cursor-enabled *::before,
+body.custom-cursor-enabled *::after {
   cursor: none !important;
 }
 
 /* Restore native cursor on coarse pointer / touch devices */
 @media (pointer: coarse), (hover: none) {
-  *, *::before, *::after {
+  body.custom-cursor-enabled,
+  body.custom-cursor-enabled *,
+  body.custom-cursor-enabled *::before,
+  body.custom-cursor-enabled *::after {
     cursor: auto !important;
   }
 }

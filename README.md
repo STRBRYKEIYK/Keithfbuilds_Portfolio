@@ -1,13 +1,13 @@
 # Keith Wilhelm U. Felipe — Portfolio
 **keithfbuilds.dev** · Full-Stack Web Developer
 
-Built with Vite + React + TypeScript + Tailwind CSS
+Built with Vite + React + Tailwind CSS
 
 ---
 
 ## ✨ Features
 
-- ⚡ Vite + React 18 + TypeScript
+- ⚡ Vite + React 18
 - 🎨 Tailwind CSS with custom design system
 - 🖱️ Custom cursor (desktop)
 - 📊 Animated skill bars with Intersection Observer
@@ -28,7 +28,6 @@ Built with Vite + React + TypeScript + Tailwind CSS
 |------|---------|
 | Vite 5 | Build tool |
 | React 18 | UI framework |
-| TypeScript | Type safety |
 | Tailwind CSS | Styling |
 | Framer Motion | (available, optional) |
 | react-icons | Icon library |
@@ -74,16 +73,18 @@ portfolio/
 │   └── favicon.svg
 ├── src/
 │   ├── components/
-│   │   ├── Navbar.tsx       # Fixed nav with scroll detection
-│   │   ├── Hero.tsx         # Animated hero with typing effect + particles
-│   │   ├── About.tsx        # About me + stats + code block
-│   │   ├── Skills.tsx       # Skill bars + tech tag cloud
-│   │   ├── Projects.tsx     # Project cards with expand/collapse
-│   │   ├── Contact.tsx      # Contact form (mailto fallback)
-│   │   └── Footer.tsx       # Footer
-│   ├── App.tsx              # Root + cursor + scroll progress
+│   │   ├── Navbar.jsx       # Fixed nav with scroll detection
+│   │   ├── Hero.jsx         # Animated hero with typing effect + particles
+│   │   ├── About.jsx        # About me + stats + code block
+│   │   ├── Skills.jsx       # Skill bars + tech tag cloud
+│   │   ├── Projects.jsx     # Project cards with expand/collapse
+│   │   ├── Contact.jsx      # Contact form (API submission)
+│   │   └── Footer.jsx       # Footer
+│   ├── App.jsx              # Root + cursor + scroll progress
 │   ├── index.css            # Global styles + Tailwind
-│   └── main.tsx             # Entry point
+│   └── main.jsx             # Entry point
+├── functions/
+│   └── contact.js           # Serverless contact endpoint
 ├── index.html
 ├── vite.config.ts
 ├── tailwind.config.js
@@ -97,13 +98,13 @@ portfolio/
 
 ### Update personal info
 Edit these files:
-- `src/components/Hero.tsx` — name, tagline, social links
-- `src/components/About.tsx` — bio, quick facts, stats
-- `src/components/Contact.tsx` — email, location, social links
-- `src/components/Footer.tsx` — footer text
+- `src/components/Hero.jsx` — name, tagline, social links
+- `src/components/About.jsx` — bio, quick facts, stats
+- `src/components/Contact.jsx` — email, location, social links
+- `src/components/Footer.jsx` — footer text
 
 ### Add your photo
-Place your photo in `public/` as `avatar.jpg`, then in `Hero.tsx` replace the canvas section or add an `<img>` tag.
+Place your photo in `public/` as `avatar.jpg`, then in `Hero.jsx` replace the canvas section or add an `<img>` tag.
 
 ### Add resume PDF
 Place your PDF in `public/` as `Keith_Wilhelm_Felipe_Resume.pdf`.
@@ -112,26 +113,49 @@ The Resume download button in the navbar will work automatically.
 ### Change color accent
 In `src/index.css`, update:
 ```css
---emerald: #10b981;  /* Change to any color */
+--green: #16C172;  /* Change to any color */
 ```
 
 ---
 
 ## 📬 Contact Form
 
-The contact form uses `mailto:` as a fallback (no backend needed).
-For a real form submission, integrate:
-- [Formspree](https://formspree.io) — free, easy
-- [EmailJS](https://emailjs.com) — client-side email
-- Replace the `handleSubmit` in `Contact.tsx`
+The contact form now submits to `/api/contact`, which redirects to the Netlify-style serverless function at `functions/contact.js`.
 
-**Formspree example:**
-```tsx
-const response = await fetch('https://formspree.io/f/YOUR_ID', {
-  method: 'POST',
-  body: JSON.stringify(form),
-  headers: { 'Content-Type': 'application/json' },
-})
+Set these environment variables in your hosting provider:
+- `RESEND_API_KEY`
+- `CONTACT_TO_EMAIL`
+- `CONTACT_FROM_EMAIL` (optional; defaults to Resend onboarding sender)
+- `CONTACT_ALLOWED_ORIGINS` (optional comma-separated allowlist; defaults to production domain + localhost)
+- `UPSTASH_REDIS_REST_URL` (optional; enables distributed rate limiting and shared counters)
+- `UPSTASH_REDIS_REST_TOKEN` (optional; required with Upstash URL)
+- `CONTACT_SUMMARY_RETENTION_DAYS` (optional; defaults to 30)
+- `ADMIN_SUMMARY_KEY` (required only if you use `/api/contact-summary`)
+- `CONTACT_IP_HASH_SALT` (optional but recommended; pseudonymizes client IP references in logs and limiter keys)
+
+Optional frontend override:
+- `VITE_CONTACT_ENDPOINT` to point to another API URL.
+- `VITE_CONTACT_ANALYTICS_ENDPOINT` to point to another analytics URL.
+
+Anti-spam protections included:
+- basic payload validation
+- hidden honeypot field
+- origin allowlist checks
+- per-IP rate limiting
+- server-side submission/event logging
+- optional distributed limits/counters with Upstash Redis
+
+Admin summary endpoint:
+- `GET /api/contact-summary?date=YYYY-MM-DD`
+- Auth via `Authorization: Bearer <ADMIN_SUMMARY_KEY>` or `X-Admin-Key` header
+
+## 🔐 Obfuscation
+
+Production builds enable JavaScript obfuscation by default.
+
+Disable explicitly when needed:
+```bash
+ENABLE_OBFUSCATION=false npm run build
 ```
 
 ---

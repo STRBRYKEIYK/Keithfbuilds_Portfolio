@@ -1,6 +1,7 @@
-const https = require('https');
-const fs = require('fs');
-const crypto = require('crypto');
+import https from 'node:https';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+
 const url = 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516';
 
 https.get(url, (res) => {
