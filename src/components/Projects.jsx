@@ -3,7 +3,7 @@ import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import Carousel from './ui/Carousel/Carousel'
 import ProjectVideoPlaceholder from './Projects/ProjectVideoPlaceholder'
 import { FaStore, FaTruckMoving, FaMoneyCheckAlt, FaFileAlt } from 'react-icons/fa'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { FiChevronLeft, FiChevronRight, FiExternalLink } from 'react-icons/fi'
 import { RiTerminalBoxLine } from 'react-icons/ri'
 import { BsCircleFill } from 'react-icons/bs'
 
@@ -30,6 +30,7 @@ const PROJECTS = [
     impact: '1,000+ SKUs',
     impactLabel: 'Managed',
     icon: FaStore,
+    liveDemoUrl: 'https://strbrykeiyk.github.io/Toolbox_new_demo/',
     video: {
       src: '/videos/project-01.mp4',
       posterLabel: 'Video coming soon',
@@ -375,6 +376,39 @@ export default function Projects() {
           gap: 7px;
           margin-bottom: 0;
         }
+        .proj-demo-panel {
+          background: var(--bg-card);
+          border: 1px solid rgba(22,193,114,0.12);
+          border-radius: 14px;
+          padding: 14px;
+        }
+        .proj-demo-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          padding: 12px 14px;
+          border-radius: 4px;
+          border: 1px solid;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          text-decoration: none;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.2s, background 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+        .proj-demo-btn:hover {
+          transform: translateY(-1px);
+        }
+        .proj-demo-btn:active {
+          transform: translateY(0);
+        }
+        .proj-demo-btn svg {
+          font-size: 13px;
+        }
         .stack-tag {
           font-family: 'JetBrains Mono', monospace;
           font-size: 10px;
@@ -628,6 +662,7 @@ export default function Projects() {
                       </span>
                     ))}
                   </div>
+
                 </div>
               </div>
 
@@ -669,6 +704,22 @@ export default function Projects() {
                   ))}
                 </div>
               </div>
+
+              {proj.liveDemoUrl ? (
+                <div className="proj-demo-panel" style={{ borderColor: `${proj.color}20`, background: `${proj.color}06` }}>
+                  <a
+                    href={proj.liveDemoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="proj-demo-btn focus-ring"
+                    style={{ color: proj.color, borderColor: `${proj.color}66`, background: `${proj.color}16`, boxShadow: `0 0 18px ${proj.color}22` }}
+                    aria-label={`Open live demo for ${proj.title}`}
+                  >
+                    <span>Open Live Demo</span>
+                    <FiExternalLink />
+                  </a>
+                </div>
+              ) : null}
 
               {/* Thumbnail switcher */}
               <div className="proj-thumb-list">
