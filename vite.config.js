@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import JavaScriptObfuscator from 'javascript-obfuscator'
 import { pathToFileURL } from 'node:url'
@@ -110,6 +110,9 @@ function productionObfuscationPlugin(enabled) {
 }
 
 export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  Object.assign(process.env, env)
+
   const shouldObfuscate =
     process.env.ENABLE_OBFUSCATION === 'true' ||
     (mode === 'production' && process.env.ENABLE_OBFUSCATION !== 'false')

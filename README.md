@@ -151,6 +151,7 @@ Anti-spam protections included:
 - per-IP rate limiting
 - server-side submission/event logging
 - optional distributed limits/counters with Upstash Redis
+- automatic lead risk scoring (`low` / `medium` / `high`) with verification signals
 
 Free Gmail option:
 - Enable 2-Step Verification on your Google account.
@@ -161,6 +162,10 @@ Free Gmail option:
 Admin summary endpoint:
 - `GET /api/contact-summary?date=YYYY-MM-DD`
 - Auth via `Authorization: Bearer <ADMIN_SUMMARY_KEY>` or `X-Admin-Key` header
+- Optional query params:
+   - `includeLeads=1|0` (default `1`)
+   - `leadsLimit=10` (default 10, capped by `CONTACT_RECENT_LEADS_LIMIT`)
+- Each returned lead includes `suggestedReply` (risk-based draft subject/body for safer follow-ups)
 
 ## 🔐 Obfuscation
 
