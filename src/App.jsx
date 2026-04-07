@@ -16,6 +16,15 @@ const isDesktopViewport = () =>
 export default function App() {
   const railRef = useRef(null)
   const [activeSection, setActiveSection] = useState('hero')
+  const [isBooting, setIsBooting] = useState(true)
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setIsBooting(false)
+    }, 5000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [])
 
   const scrollToSection = (id) => {
     const target = document.getElementById(id)
@@ -144,6 +153,50 @@ export default function App() {
       window.removeEventListener('resize', onScroll)
     }
   }, [])
+
+  if (isBooting) {
+    return (
+      <div className="startup-loader" role="status" aria-live="polite" aria-busy="true">
+        <div className="startup-loader-panel">
+          <div className="startup-loader-art" aria-hidden="true">
+            <img
+              src="/images/ICON.png"
+              alt=""
+              className="startup-loader-icon startup-loader-icon-ghost startup-loader-icon-left"
+              width="120"
+              height="120"
+              loading="eager"
+              decoding="async"
+            />
+            <img
+              src="/images/ICON.png"
+              alt=""
+              className="startup-loader-icon startup-loader-icon-main"
+              width="120"
+              height="120"
+              loading="eager"
+              decoding="async"
+            />
+            <img
+              src="/images/ICON.png"
+              alt=""
+              className="startup-loader-icon startup-loader-icon-ghost startup-loader-icon-right"
+              width="120"
+              height="120"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+
+          <p className="startup-loader-title">KeithFBuilds</p>
+
+          <div className="startup-loader-progress" aria-hidden="true">
+            <span />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="portfolio-shell">
