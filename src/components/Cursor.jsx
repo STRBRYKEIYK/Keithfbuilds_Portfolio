@@ -38,22 +38,22 @@ export default function Cursor() {
     const animate = () => {
       if (dotRef.current) {
         const scale = clickedRef.current ? 0.7 : 1
-        dotRef.current.style.transform = `translate(${pos.current.x - 4}px, ${pos.current.y - 4}px) scale(${scale})`
+        dotRef.current.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px) translate(-50%, -50%) scale(${scale})`
       }
       // smooth lag for ring
       ring.current.x += (pos.current.x - ring.current.x) * 0.12
       ring.current.y += (pos.current.y - ring.current.y) * 0.12
       if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ring.current.x - 20}px, ${ring.current.y - 20}px)`
+        ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px) translate(-50%, -50%)`
       }
       rafRef.current = requestAnimationFrame(animate)
     }
 
     const onOver = (e) => {
-      if (e.target.closest('a, button, [data-cursor]')) setHovered(true)
+      if (e.target.closest('a, button, input, textarea, select, [data-cursor]')) setHovered(true)
     }
     const onOut = (e) => {
-      if (e.target.closest('a, button, [data-cursor]')) setHovered(false)
+      if (e.target.closest('a, button, input, textarea, select, [data-cursor]')) setHovered(false)
     }
 
     window.addEventListener('mousemove', onMove)
@@ -82,37 +82,42 @@ export default function Cursor() {
         .cursor-dot {
           position: fixed;
           top: 0; left: 0;
-          width: 8px; height: 8px;
-          background: #16C172;
+          width: 7px; height: 7px;
+          background: var(--main-strong);
+          border: 1px solid rgba(255, 255, 255, 0.55);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99999;
           will-change: transform;
-          transition: width 0.2s, height 0.2s, background 0.2s;
-          box-shadow: 0 0 10px #16C172, 0 0 20px rgba(22,193,114,0.4);
+          transition: width 0.22s ease, height 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+          box-shadow: 0 0 0 4px rgba(37, 87, 42, 0.08);
         }
         .cursor-ring {
           position: fixed;
           top: 0; left: 0;
-          width: 40px; height: 40px;
-          border: 1.5px solid rgba(22,193,114,0.5);
+          width: 34px; height: 34px;
+          border: 1px solid rgba(37, 87, 42, 0.38);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99998;
           will-change: transform;
-          transition: width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
+          transition: width 0.24s ease, height 0.24s ease, border-color 0.24s ease, background 0.24s ease;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(2px);
         }
         .cursor-dot.hovered {
-          width: 6px; height: 6px;
-          background: #fff;
+          width: 9px; height: 9px;
+          background: var(--accent);
+          border-color: rgba(255, 255, 255, 0.7);
         }
         .cursor-ring.hovered {
-          width: 56px; height: 56px;
-          border-color: rgba(22,193,114,0.8);
-          background: rgba(22,193,114,0.06);
+          width: 48px; height: 48px;
+          border-color: rgba(206, 108, 47, 0.62);
+          background: rgba(206, 108, 47, 0.08);
         }
         .cursor-dot.clicked {
-          background: #fff;
+          background: #ffffff;
+          border-color: rgba(37, 87, 42, 0.25);
         }
       `}</style>
       <div ref={dotRef} className={`cursor-dot ${hovered ? 'hovered' : ''} ${clicked ? 'clicked' : ''}`} />

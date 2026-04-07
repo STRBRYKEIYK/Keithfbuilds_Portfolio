@@ -1,299 +1,177 @@
-import { useState } from "react";
-import useBootLoader from "./hooks/useBootLoader";
-import useSmoothLenis from "./hooks/useSmoothLenis";
-import Cursor from "./components/Cursor";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Skills from "./components/Skills";
-import Projects from "./components/Projects";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
-import ScanlineIcon from "./components/ScanlineIcon";
+import { useEffect, useRef, useState } from 'react'
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
+import About from './components/About'
+import Skills from './components/Skills'
+import Projects from './components/Projects'
+import Contact from './components/Contact'
+import Footer from './components/Footer'
+import Cursor from './components/Cursor'
 
-const BOOT_LINES = [
-  "> initializing neural_link...",
-  "> loading portfolio modules...",
-  "> mounting components...",
-  "> compiling shaders...",
-  "> all systems nominal.",
-];
+const SECTION_IDS = ['hero', 'about', 'skills', 'projects', 'contact']
 
-function Loader({ onDone }) {
-  const { progress, leaving, visibleLines } = useBootLoader({
-    bootLines: BOOT_LINES,
-    onDone,
-    durationMs: 2500,
-    leaveDelayMs: 700,
-  });
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "#050A07",
-        zIndex: 99999,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "28px",
-        transition: "opacity 0.7s ease, transform 0.7s ease",
-        opacity: leaving ? 0 : 1,
-        transform: leaving ? "translateY(-24px)" : "translateY(0)",
-      }}
-    >
-      {/* Ambient grid background */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(rgba(22,193,114,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(22,193,114,0.04) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Corner decorators */}
-      {[
-        { top: 24, left: 24, borderTop: "1px solid", borderLeft: "1px solid" },
-        {
-          top: 24,
-          right: 24,
-          borderTop: "1px solid",
-          borderRight: "1px solid",
-        },
-        {
-          bottom: 24,
-          left: 24,
-          borderBottom: "1px solid",
-          borderLeft: "1px solid",
-        },
-        {
-          bottom: 24,
-          right: 24,
-          borderBottom: "1px solid",
-          borderRight: "1px solid",
-        },
-      ].map((style, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: 20,
-            height: 20,
-            borderColor: "rgba(22,193,114,0.3)",
-            ...style,
-          }}
-        />
-      ))}
-
-      {/* Icon + Title */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "20px",
-          zIndex: 1,
-        }}
-      >
-        <ScanlineIcon size={72} />
-        <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-          <h1
-            style={{
-              fontSize: "22px",
-              margin: 0,
-              letterSpacing: "0.12em",
-              color: "#16C172",
-              textShadow: "0 0 12px #16C17299",
-            }}
-          >
-            KEITHFBUILDS.DEV
-          </h1>
-          <p
-            style={{
-              fontSize: "11px",
-              opacity: 0.5,
-              margin: "5px 0 0 0",
-              color: "#16C172",
-              letterSpacing: "0.15em",
-            }}
-          >
-            v2.0.4 // NEURAL_LINK_ACTIVE
-          </p>
-        </div>
-      </div>
-
-      {/* Boot log */}
-      <div
-        style={{
-          width: 300,
-          minHeight: 90,
-          display: "flex",
-          flexDirection: "column",
-          gap: 6,
-          zIndex: 1,
-        }}
-      >
-        {visibleLines.map((line, i) => (
-          <div
-            key={i}
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "11px",
-              color: i === visibleLines.length - 1 ? "#16C172" : "#4A6B57",
-              letterSpacing: "0.08em",
-              textShadow:
-                i === visibleLines.length - 1 ? "0 0 6px #16C17266" : "none",
-              animation: "fadeInLine 0.2s ease forwards",
-            }}
-          >
-            {line}
-            {i === visibleLines.length - 1 && progress < 100 && (
-              <span
-                style={{
-                  animation: "blink 0.8s step-end infinite",
-                  marginLeft: 2,
-                }}
-              >
-                █
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Progress bar */}
-      <div style={{ width: 300, zIndex: 1 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "10px",
-            color: "#4A6B57",
-            letterSpacing: "0.1em",
-            marginBottom: 8,
-          }}
-        >
-          <span>LOADING</span>
-          <span
-            style={{
-              color: progress === 100 ? "#16C172" : "#4A6B57",
-              textShadow: progress === 100 ? "0 0 6px #16C172" : "none",
-            }}
-          >
-            {Math.min(Math.round(progress), 100)}%
-          </span>
-        </div>
-
-        {/* Track */}
-        <div
-          style={{
-            width: "100%",
-            height: "2px",
-            background: "rgba(22,193,114,0.12)",
-            borderRadius: "2px",
-            overflow: "visible",
-            position: "relative",
-          }}
-        >
-          {/* Fill */}
-          <div
-            style={{
-              height: "100%",
-              background: "linear-gradient(90deg, #0d7a47 0%, #16C172 100%)",
-              width: `${Math.min(progress, 100)}%`,
-              transition: "width 0.12s ease",
-              borderRadius: "2px",
-              boxShadow: "0 0 10px #16C17299, 0 0 24px #16C17244",
-              position: "relative",
-            }}
-          >
-            {/* Leading glow dot */}
-            <div
-              style={{
-                position: "absolute",
-                right: -3,
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#16C172",
-                boxShadow: "0 0 8px 3px #16C172",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Tick marks */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 6,
-          }}
-        >
-          {[0, 25, 50, 75, 100].map((tick) => (
-            <div
-              key={tick}
-              style={{
-                width: "1px",
-                height: "4px",
-                background:
-                  progress >= tick
-                    ? "rgba(22,193,114,0.6)"
-                    : "rgba(22,193,114,0.15)",
-                transition: "background 0.3s ease",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes fadeInLine {
-          from { opacity: 0; transform: translateX(-6px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
-        }
-      `}</style>
-    </div>
-  );
-}
+const isDesktopViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia('(min-width: 1025px)').matches
 
 export default function App() {
-  const [loaded, setLoaded] = useState(false);
+  const railRef = useRef(null)
+  const [activeSection, setActiveSection] = useState('hero')
 
-  // Smooth scroll init with Lenis
-  useSmoothLenis(loaded);
+  const scrollToSection = (id) => {
+    const target = document.getElementById(id)
+    if (!target) return
+
+    if (isDesktopViewport() && railRef.current) {
+      railRef.current.scrollTo({ left: target.offsetLeft, behavior: 'smooth' })
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    setActiveSection(id)
+  }
+
+  const handleRailKeyDown = (event) => {
+    if (!isDesktopViewport()) return
+
+    const keys = ['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', 'Home', 'End']
+    if (!keys.includes(event.key)) return
+
+    event.preventDefault()
+
+    if (event.key === 'Home') {
+      scrollToSection(SECTION_IDS[0])
+      return
+    }
+
+    if (event.key === 'End') {
+      scrollToSection(SECTION_IDS[SECTION_IDS.length - 1])
+      return
+    }
+
+    const direction = event.key === 'ArrowRight' || event.key === 'PageDown' ? 1 : -1
+    const currentIndex = SECTION_IDS.indexOf(activeSection)
+    const safeIndex = currentIndex === -1 ? 0 : currentIndex
+    const nextIndex = Math.min(Math.max(safeIndex + direction, 0), SECTION_IDS.length - 1)
+
+    scrollToSection(SECTION_IDS[nextIndex])
+  }
+
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return
+
+    const onWheel = (event) => {
+      if (!isDesktopViewport()) return
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
+
+      const panel = event.target instanceof Element ? event.target.closest('.portfolio-panel') : null
+      if (panel) {
+        const canScrollVertically = panel.scrollHeight > panel.clientHeight
+        const atTop = panel.scrollTop <= 0
+        const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1
+
+        if (canScrollVertically) {
+          if ((event.deltaY < 0 && !atTop) || (event.deltaY > 0 && !atBottom)) {
+            return
+          }
+        }
+      }
+
+      event.preventDefault()
+      rail.scrollBy({ left: event.deltaY * 1.15, behavior: 'auto' })
+    }
+
+    rail.addEventListener('wheel', onWheel, { passive: false })
+    return () => rail.removeEventListener('wheel', onWheel)
+  }, [])
+
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return
+
+    const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(Boolean)
+    if (!sections.length) return
+
+    let frame = 0
+
+    const setActiveFromViewport = () => {
+      if (isDesktopViewport()) {
+        const railRect = rail.getBoundingClientRect()
+        const marker = railRect.left + railRect.width * 0.42
+        let nearest = 'hero'
+        let nearestDistance = Number.POSITIVE_INFINITY
+
+        sections.forEach((section) => {
+          const rect = section.getBoundingClientRect()
+          const center = rect.left + rect.width / 2
+          const distance = Math.abs(center - marker)
+          if (distance < nearestDistance) {
+            nearestDistance = distance
+            nearest = section.id
+          }
+        })
+
+        setActiveSection((prev) => (prev === nearest ? prev : nearest))
+        return
+      }
+
+      const marker = window.innerHeight * 0.3
+      const match = sections.find((section) => {
+        const rect = section.getBoundingClientRect()
+        return rect.top <= marker && rect.bottom >= marker
+      })
+
+      if (match?.id) {
+        setActiveSection((prev) => (prev === match.id ? prev : match.id))
+      }
+    }
+
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(setActiveFromViewport)
+    }
+
+    onScroll()
+
+    rail.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      rail.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
 
   return (
-    <>
-      {!loaded && <Loader onDone={() => setLoaded(true)} />}
+    <div className="portfolio-shell">
       <Cursor />
-      <div
-        style={{
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 0.5s ease 0.1s",
-        }}
+
+      <a className="skip-link focus-ring" href="#main-content">
+        Skip to content
+      </a>
+
+      <Navbar activeSection={activeSection} onNavigate={scrollToSection} />
+
+      <main
+        id="main-content"
+        className="portfolio-rail"
+        ref={railRef}
+        aria-label="Portfolio sections"
+        role="region"
+        tabIndex={0}
+        onKeyDown={handleRailKeyDown}
       >
-        <Navbar />
-        <main>
-          <Hero />
-          <About />
-          <Skills />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-    </>
-  );
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Contact />
+      </main>
+
+      <Footer onNavigate={scrollToSection} />
+    </div>
+  )
 }

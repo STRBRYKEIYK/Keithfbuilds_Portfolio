@@ -1,475 +1,199 @@
-import { useRef, useState } from "react";
-import useRevealOnScroll from "../hooks/useRevealOnScroll";
-import {
-  FaEnvelope,
-  FaPhoneAlt,
-  FaMapMarkerAlt,
-  FaGithub,
-  FaCheckCircle,
-} from "react-icons/fa";
+import { useState } from 'react'
+import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import { FaCheckCircle } from 'react-icons/fa'
+
+const CONTACT_LINKS = [
+  {
+    label: 'Email',
+    value: 'keithfelipe024@gmail.com',
+    href: 'mailto:keithfelipe024@gmail.com',
+  },
+  {
+    label: 'Phone',
+    value: '+63 921 605 4768',
+    href: 'tel:+639216054768',
+  },
+  {
+    label: 'Location',
+    value: 'Antipolo, Rizal PH',
+    href: null,
+  },
+  {
+    label: 'GitHub',
+    value: 'github.com/STRBRYKEIYK',
+    href: 'https://github.com/STRBRYKEIYK',
+  },
+]
 
 export default function Contact() {
-  const sectionRef = useRevealOnScroll({ threshold: 0.1, staggerMs: 100 });
-  const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || "/api/contact";
+  const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 90 })
+  const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || '/api/contact'
   const CONTACT_ANALYTICS_ENDPOINT =
-    import.meta.env.VITE_CONTACT_ANALYTICS_ENDPOINT || "/api/contact-analytics";
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    message: "",
-    company: "",
-  });
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+    import.meta.env.VITE_CONTACT_ANALYTICS_ENDPOINT || '/api/contact-analytics'
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSending(true);
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    message: '',
+    company: '',
+  })
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setErrorMsg('')
+    setSending(true)
 
     try {
       const res = await fetch(CONTACT_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formState.name,
           email: formState.email,
           message: formState.message,
           company: formState.company,
         }),
-      });
+      })
 
-      const payload = await res.json().catch(() => ({}));
+      const payload = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(payload?.error || "Unable to send message right now.");
+        throw new Error(payload?.error || 'Unable to send message right now.')
       }
 
       const analyticsPayload = JSON.stringify({
-        event: "contact_submit_success",
-        source: "contact_form",
+        event: 'contact_submit_success',
+        source: 'contact_form',
         ts: Date.now(),
-      });
+      })
 
       if (navigator.sendBeacon) {
-        navigator.sendBeacon(CONTACT_ANALYTICS_ENDPOINT, analyticsPayload);
+        navigator.sendBeacon(CONTACT_ANALYTICS_ENDPOINT, analyticsPayload)
       } else {
         fetch(CONTACT_ANALYTICS_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: analyticsPayload,
           keepalive: true,
-        }).catch(() => {});
+        }).catch(() => {})
       }
 
-      setSent(true);
-      setFormState({ name: "", email: "", message: "", company: "" });
+      setSent(true)
+      setFormState({ name: '', email: '', message: '', company: '' })
     } catch (error) {
-      setErrorMsg(error.message || "Unable to send message right now.");
+      setErrorMsg(error.message || 'Unable to send message right now.')
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
-
-  const links = [
-    {
-      label: "Email",
-      value: "keithfelipe024@gmail.com",
-      href: "mailto:keithfelipe024@gmail.com",
-      icon: <FaEnvelope />,
-    },
-    {
-      label: "Phone",
-      value: "+63 921 605 4768",
-      href: "tel:+639216054768",
-      icon: <FaPhoneAlt />,
-    },
-    {
-      label: "Location",
-      value: "Antipolo, Rizal PH",
-      href: null,
-      icon: <FaMapMarkerAlt />,
-    },
-    {
-      label: "Github",
-      value: "STRBRYKEIYK",
-      href: "https://github.com/STRBRYKEIYK",
-      icon: <FaGithub />,
-    },
-  ];
+  }
 
   return (
-    <>
-      <style>{`
-        .contact {
-          padding: 140px 0;
-          background: var(--bg-2);
-          overflow: hidden;
-          position: relative;
-        }
-        .contact::before {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 800px;
-          height: 400px;
-          background: radial-gradient(ellipse, rgba(22,193,114,0.04) 0%, transparent 70%);
-          pointer-events: none;
-        }
-        .contact-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 40px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 80px;
-        }
-        .contact-left {}
-        .contact-section-label {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: #16C172;
-          margin-bottom: 16px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .contact-section-label::before {
-          content: '';
-          display: block;
-          width: 24px;
-          height: 1px;
-          background: #16C172;
-        }
-        .contact-heading {
-          font-size: clamp(36px, 4vw, 56px);
-          color: #E8F5F0;
-          margin-bottom: 24px;
-          line-height: 1.05;
-        }
-        .contact-heading em {
-          color: #16C172;
-          font-style: normal;
-        }
-        .contact-desc {
-          font-size: 15px;
-          color: #7A9E8C;
-          font-weight: 300;
-          line-height: 1.8;
-          margin-bottom: 48px;
-        }
-        .contact-links {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .contact-link-row {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 16px 0;
-          border-bottom: 1px solid rgba(22,193,114,0.06);
-        }
-        .contact-link-label {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 10px;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          color: #4A6B57;
-          width: 70px;
-          flex-shrink: 0;
-        }
-        .contact-link-value {
-          font-size: 14px;
-          color: #7A9E8C;
-          transition: color 0.2s;
-          flex: 1;
-        }
-        a.contact-link-value:hover { color: #16C172; }
-        .contact-link-arrow {
-          color: #4A6B57;
-          font-size: 12px;
-          opacity: 0;
-          transition: opacity 0.2s, transform 0.2s;
-        }
-        a:hover .contact-link-arrow {
-          opacity: 1;
-          transform: translateX(4px);
-        }
-        /* Form */
-        .contact-form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .form-label {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 10px;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          color: #4A6B57;
-        }
-        .form-input,
-        .form-textarea {
-          background: rgba(22,193,114,0.03);
-          border: 1px solid rgba(22,193,114,0.1);
-          border-radius: 6px;
-          padding: 14px 18px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          color: #E8F5F0;
-          outline: none;
-          transition: border-color 0.3s, box-shadow 0.3s;
-          width: 100%;
-        }
-        .form-input:focus,
-        .form-textarea:focus {
-          border-color: rgba(22,193,114,0.4);
-          box-shadow: 0 0 0 3px rgba(22,193,114,0.06);
-        }
-        .form-input::placeholder,
-        .form-textarea::placeholder {
-          color: #4A6B57;
-        }
-        .form-textarea {
-          resize: vertical;
-          min-height: 120px;
-        }
-        .form-submit {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          background: #16C172;
-          color: #050A07;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 12px;
-          font-weight: 500;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          padding: 16px 32px;
-          border-radius: 6px;
-          width: 100%;
-          transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-          margin-top: 8px;
-        }
-        .form-submit:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 32px rgba(22,193,114,0.3);
-        }
-        .form-submit:disabled {
-          opacity: 0.6;
-        }
-        .sent-msg {
-          text-align: center;
-          padding: 32px;
-          background: rgba(22,193,114,0.05);
-          border: 1px solid rgba(22,193,114,0.2);
-          border-radius: 8px;
-        }
-        .sent-icon {
-          font-size: 36px;
-          margin-bottom: 12px;
-        }
-        .sent-title {
-          font-family: 'Syne', sans-serif;
-          font-size: 20px;
-          color: #16C172;
-          margin-bottom: 8px;
-        }
-        .sent-sub {
-          font-size: 13px;
-          color: #7A9E8C;
-        }
-        .form-error {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          color: #ff7e7e;
-          border: 1px solid rgba(255, 126, 126, 0.4);
-          background: rgba(255, 126, 126, 0.08);
-          border-radius: 6px;
-          padding: 12px 14px;
-        }
-        .sr-only {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border: 0;
-        }
-        @media (max-width: 900px) {
-          .contact-inner {
-            grid-template-columns: 1fr;
-            gap: 60px;
-          }
-        }
-        @media (max-width: 768px) {
-          .contact { padding: 100px 0; }
-          .contact-inner { padding: 0 24px; }
-        }
-      `}</style>
+    <section id="contact" className="portfolio-panel" ref={sectionRef}>
+      <div className="panel-inner contact-grid">
+        <div>
+          <p className="kicker reveal" data-reveal>
+            Contact
+          </p>
 
-      <section id="contact" className="contact" ref={sectionRef}>
-        <div className="contact-inner">
-          <div className="contact-left">
-            <div className="contact-section-label reveal" data-reveal>
-              Get In Touch
-            </div>
-            <h2 className="contact-heading reveal" data-reveal>
-              Let's build
-              <br />
-              something <em>great</em>
-            </h2>
-            <p className="contact-desc reveal" data-reveal>
-              I'm open to remote full-time roles, freelance projects, and
-              long-term collaborations. If you need a developer who ships
-              enterprise-quality work — let's talk.
-            </p>
+          <h2 className="panel-title reveal" data-reveal>
+            Let&apos;s build something useful and reliable.
+          </h2>
 
-            <div className="contact-links">
-              {links.map((link, i) => (
-                <div
-                  key={link.label}
-                  className="reveal"
-                  data-reveal
-                  style={{ transitionDelay: `${i * 80}ms` }}
-                >
-                  {link.href ? (
-                    <a
-                      href={link.href}
-                      className="contact-link-row"
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
-                    >
-                      <span style={{ fontSize: 18, color: "#16C172" }}>
-                        {link.icon}
-                      </span>
-                      <span className="contact-link-label">{link.label}</span>
-                      <span className="contact-link-value">{link.value}</span>
-                      <span className="contact-link-arrow">→</span>
-                    </a>
-                  ) : (
-                    <div
-                      className="contact-link-row"
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
-                    >
-                      <span style={{ fontSize: 18, color: "#16C172" }}>
-                        {link.icon}
-                      </span>
-                      <span className="contact-link-label">{link.label}</span>
-                      <span className="contact-link-value">{link.value}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="panel-copy reveal" data-reveal>
+            Open to full-time remote roles, long-term collaborations, and product-focused freelance
+            engagements.
+          </p>
 
-          <div
-            className="reveal"
-            data-reveal
-            style={{ transitionDelay: "200ms" }}
-          >
-            {sent ? (
-              <div className="sent-msg">
-                <div className="sent-icon">
-                  <FaCheckCircle color="#16C172" />
-                </div>
-                <div className="sent-title">Message Sent!</div>
-                <p className="sent-sub">
-                  Thanks for reaching out. I'll get back to you soon.
-                </p>
+          <div className="contact-list reveal" data-reveal>
+            {CONTACT_LINKS.map((item) => (
+              <div key={item.label} className="contact-item">
+                <span>{item.label}</span>
+                {item.href ? (
+                  <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+                    {item.value}
+                  </a>
+                ) : (
+                  <strong>{item.value}</strong>
+                )}
               </div>
-            ) : (
-              <form className="contact-form" onSubmit={handleSubmit}>
-                <div className="sr-only" aria-hidden="true">
-                  <label htmlFor="contact-company">Company</label>
-                  <input
-                    id="contact-company"
-                    name="company"
-                    type="text"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={formState.company}
-                    onChange={(e) =>
-                      setFormState((s) => ({ ...s, company: e.target.value }))
-                    }
-                  />
-                </div>
-
-                {errorMsg ? (
-                  <div className="form-error" role="alert">
-                    {errorMsg}
-                  </div>
-                ) : null}
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="contact-name">Your Name</label>
-                  <input
-                    id="contact-name"
-                    className="form-input"
-                    type="text"
-                    placeholder="John Doe"
-                    required
-                    value={formState.name}
-                    onChange={(e) =>
-                      setFormState((s) => ({ ...s, name: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="contact-email">Email Address</label>
-                  <input
-                    id="contact-email"
-                    className="form-input"
-                    type="email"
-                    placeholder="hello@company.com"
-                    required
-                    value={formState.email}
-                    onChange={(e) =>
-                      setFormState((s) => ({ ...s, email: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="contact-message">Message</label>
-                  <textarea
-                    id="contact-message"
-                    className="form-textarea"
-                    placeholder="Tell me about your project or opportunity..."
-                    required
-                    value={formState.message}
-                    onChange={(e) =>
-                      setFormState((s) => ({ ...s, message: e.target.value }))
-                    }
-                  />
-                </div>
-                <button
-                  className="form-submit"
-                  type="submit"
-                  disabled={sending}
-                >
-                  {sending ? "Sending..." : "Send Message →"}
-                </button>
-              </form>
-            )}
+            ))}
           </div>
         </div>
-      </section>
-    </>
-  );
+
+        <div className="reveal" data-reveal>
+          {sent ? (
+            <div className="sent-card" role="status">
+              <FaCheckCircle />
+              <h3>Message sent</h3>
+              <p>Thanks for reaching out. I will reply as soon as possible.</p>
+            </div>
+          ) : (
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <div className="sr-only" aria-hidden="true">
+                <label htmlFor="contact-company">Company</label>
+                <input
+                  id="contact-company"
+                  name="company"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formState.company}
+                  onChange={(event) =>
+                    setFormState((state) => ({ ...state, company: event.target.value }))
+                  }
+                />
+              </div>
+
+              {errorMsg ? (
+                <div className="form-error" role="alert">
+                  {errorMsg}
+                </div>
+              ) : null}
+
+              <label htmlFor="contact-name">Your Name</label>
+              <input
+                id="contact-name"
+                type="text"
+                required
+                placeholder="John Doe"
+                value={formState.name}
+                onChange={(event) =>
+                  setFormState((state) => ({ ...state, name: event.target.value }))
+                }
+              />
+
+              <label htmlFor="contact-email">Email Address</label>
+              <input
+                id="contact-email"
+                type="email"
+                required
+                placeholder="hello@company.com"
+                value={formState.email}
+                onChange={(event) =>
+                  setFormState((state) => ({ ...state, email: event.target.value }))
+                }
+              />
+
+              <label htmlFor="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                required
+                placeholder="Tell me about your project or role."
+                value={formState.message}
+                onChange={(event) =>
+                  setFormState((state) => ({ ...state, message: event.target.value }))
+                }
+              />
+
+              <button type="submit" className="btn btn-primary" disabled={sending}>
+                {sending ? 'Sending...' : 'Send Message'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
+  )
 }
