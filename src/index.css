@@ -46,6 +46,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 .startup-loader {
   position: fixed;
   inset: 0;
@@ -1036,6 +1041,17 @@ opacity: 0.95;
 .project-link::after {
   content: '↗';
   transition: transform 0.22s ease;
+}
+
+.project-link-soon {
+  border-style: dashed;
+  color: var(--ink-muted);
+  background: rgba(37, 87, 42, 0.06);
+  cursor: default;
+}
+
+.project-link-soon::after {
+  content: '';
 }
 
 .project-link:hover,

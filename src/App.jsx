@@ -26,6 +26,27 @@ export default function App() {
     return () => window.clearTimeout(timeoutId)
   }, [])
 
+  useEffect(() => {
+    const onContextMenu = (event) => {
+      event.preventDefault()
+    }
+
+    const onDragStart = (event) => {
+      const target = event.target
+      if (target instanceof Element && target.closest('img')) {
+        event.preventDefault()
+      }
+    }
+
+    document.addEventListener('contextmenu', onContextMenu)
+    document.addEventListener('dragstart', onDragStart)
+
+    return () => {
+      document.removeEventListener('contextmenu', onContextMenu)
+      document.removeEventListener('dragstart', onDragStart)
+    }
+  }, [])
+
   const scrollToSection = (id) => {
     const target = document.getElementById(id)
     if (!target) return
