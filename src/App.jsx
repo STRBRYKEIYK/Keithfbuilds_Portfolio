@@ -66,6 +66,8 @@ export default function App() {
   }
 
   useEffect(() => {
+    if (isBooting) return
+
     const rail = railRef.current
     if (!rail) return
 
@@ -92,9 +94,11 @@ export default function App() {
 
     rail.addEventListener('wheel', onWheel, { passive: false })
     return () => rail.removeEventListener('wheel', onWheel)
-  }, [])
+  }, [isBooting])
 
   useEffect(() => {
+    if (isBooting) return
+
     const rail = railRef.current
     if (!rail) return
 
@@ -152,7 +156,7 @@ export default function App() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [isBooting])
 
   if (isBooting) {
     return (
