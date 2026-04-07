@@ -1,53 +1,66 @@
-import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import useRevealOnScroll from "../hooks/useRevealOnScroll";
 
-const RESUME_FILE = 'KeithFbuilds.dev - Resume.pdf'
-const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`
+const RESUME_FILE = "KeithFbuilds.dev - Resume.pdf";
+const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`;
 
 const jumpTo = (event, id) => {
-  event.preventDefault()
+  event.preventDefault();
   document.getElementById(id)?.scrollIntoView({
-    behavior: 'smooth',
-    inline: 'start',
-    block: 'nearest',
-  })
-}
+    behavior: "smooth",
+    inline: "start",
+    block: "nearest",
+  });
+};
 
 export default function Hero() {
-  const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 110 })
+  const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 110 });
 
   return (
     <section id="hero" className="portfolio-panel hero-panel" ref={sectionRef}>
       <div className="panel-inner hero-grid">
         <div>
           <p className="kicker reveal" data-reveal>
-            Full-Stack Developer • Antipolo, Rizal PH • Remote Ready
+            Enterprise Systems • Antipolo, Rizal PH • Remote Ready
           </p>
 
           <h1 className="hero-title reveal" data-reveal>
-            Building enterprise web systems teams can trust every day.
+            AI-Empowered Full-Stack Developer
           </h1>
 
           <p className="panel-copy reveal" data-reveal>
-            BSIT graduate focused on React + TypeScript applications for operations, procurement,
-            payroll, and document automation. I build fast interfaces backed by reliable business
-            logic.
+            I architect React + TypeScript systems for operations, procurement,
+            and finance, owning the data model, real-time sync, and approval
+            logic. AI copilots accelerate boilerplate, testing, and UI delivery
+            while I stay responsible for the architecture and business rules.
           </p>
 
           <div className="hero-actions reveal" data-reveal>
-            <a href="#projects" className="btn btn-primary focus-ring" onClick={(event) => jumpTo(event, 'projects')}>
+            <a
+              href="#projects"
+              className="btn btn-primary focus-ring"
+              onClick={(event) => jumpTo(event, "projects")}
+            >
               View Selected Work
             </a>
-            <a href="#contact" className="btn btn-ghost focus-ring" onClick={(event) => jumpTo(event, 'contact')}>
+            <a
+              href="#contact"
+              className="btn btn-ghost focus-ring"
+              onClick={(event) => jumpTo(event, "contact")}
+            >
               Start a Conversation
             </a>
-            <a href={RESUME_HREF} download className="btn btn-subtle focus-ring">
+            <a
+              href={RESUME_HREF}
+              download
+              className="btn btn-subtle focus-ring"
+            >
               Download Resume
             </a>
           </div>
         </div>
 
         <aside className="hero-card reveal" data-reveal>
-          <h2>Resume Snapshot</h2>
+          <h2>Delivery Snapshot</h2>
 
           <ul className="resume-list">
             <li>
@@ -55,12 +68,12 @@ export default function Hero() {
               <strong>React 18 + TypeScript + Tailwind</strong>
             </li>
             <li>
-              <span>Domain Strength</span>
-              <strong>POS, Procurement, Finance, Automation</strong>
+              <span>Signature Systems</span>
+              <strong>1,000+ SKU POS, Procurement, Finance</strong>
             </li>
             <li>
-              <span>Delivery Focus</span>
-              <strong>Real-time workflows and data integrity</strong>
+              <span>Delivery Approach</span>
+              <strong>Architect-led, AI-accelerated execution</strong>
             </li>
           </ul>
 
@@ -71,7 +84,12 @@ export default function Hero() {
             <a href="tel:+639216054768" className="focus-ring">
               +63 921 605 4768
             </a>
-            <a href="https://github.com/STRBRYKEIYK" target="_blank" rel="noreferrer" className="focus-ring">
+            <a
+              href="https://github.com/STRBRYKEIYK"
+              target="_blank"
+              rel="noreferrer"
+              className="focus-ring"
+            >
               github.com/STRBRYKEIYK
             </a>
           </div>
@@ -90,5 +108,5 @@ export default function Hero() {
         </figure>
       </div>
     </section>
-  )
+  );
 }
