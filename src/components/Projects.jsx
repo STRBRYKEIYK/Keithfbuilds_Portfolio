@@ -44,6 +44,7 @@ const PROJECTS = [
       "Dynamic KPI dashboards with chart-based analytics",
       "Payroll support with bulk period processing",
     ],
+    liveDemoUrl: "https://github.com/STRBRYKEIYK/FPD_demo",
   },
   {
     title: "Doc Automation Service",
