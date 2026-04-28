@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useDeviceCapabilities from '../hooks/useDeviceCapabilities'
 
 export default function Cursor() {
   const dotRef = useRef(null)
@@ -9,12 +10,13 @@ export default function Cursor() {
   const ring = useRef({ x: -100, y: -100 })
   const rafRef = useRef(null)
   const clickedRef = useRef(false)
+  const { canUseCustomCursor } = useDeviceCapabilities()
 
   const [cursorEnabled] = useState(() => {
     if (typeof window === 'undefined') return true
     const coarse = window.matchMedia?.('(pointer: coarse)')?.matches
     const touch = 'ontouchstart' in window
-    return !(coarse || touch)
+    return !(coarse || touch) && canUseCustomCursor
   })
 
   useEffect(() => {

@@ -3,7 +3,22 @@ import Carousel from "./ui/Carousel/Carousel";
 
 const PROJECTS = [
   {
-    title: "Toolbox POS System",
+    title: "AETHER - Real Estate Platform",
+    subtitle: "Full-Stack Web Application",
+    impact: "Dynamic Property Discovery",
+    color: "#0f766e",
+    stack: ["Next.js", "React", "Tailwind CSS", "Framer Motion", "Lucide React", "Relume UI"],
+    desc: "A modern, high-performance real estate web application for showcasing property listings, neighborhood guides, and delivering a seamless experience for homebuyers and renters.",
+    highlights: [
+      "Server-Side Rendering (SSR) and Static Site Generation (SSG) for optimal performance and SEO",
+      "Dynamic property routing with dedicated detail pages and amenity exploration",
+      "Comprehensive neighborhood guides with location insights",
+      "Fully responsive mobile-first design with fluid animations",
+    ],
+    liveDemoUrl: "https://aether.keithfbuilds.dev",
+  },
+  {
+    title: "Toolbox - Inventory & POS System",
     subtitle: "Full-Stack Development",
     impact: "1,000+ SKUs Managed",
     color: "#1f9a67",
@@ -15,24 +30,9 @@ const PROJECTS = [
       "Socket.IO multi-session stock synchronization",
       "Advanced cart with session persistence and recovery",
     ],
-    liveDemoUrl: "https://strbrykeiyk.github.io/Toolbox_new_demo/",
+    liveDemoUrl: "https://toolbox.keithfbuilds.dev",
   },
   {
-    title: "Procurement Dept.",
-    subtitle: "Frontend Development",
-    impact: "Full Supply Chain Coverage",
-    color: "#f08a24",
-    stack: ["React", "TypeScript", "QR/Barcode", "WebSocket", "Axios"],
-    desc: "Procurement and inventory module for supplier management and purchase order workflows with strong process visibility.",
-    highlights: [
-      "QR/barcode generation and scanning for inventory",
-      "Multi-step purchase order creation wizard",
-      "Duplicate detection for inventory integrity",
-      "CSV/Excel import with validation and error reporting",
-    ],
-  },
-  {
-    title: "Finance Payroll Dept.",
     subtitle: "Full-Stack Financial Systems",
     impact: "Complete ERP Module",
     color: "#1f6f53",
@@ -44,7 +44,20 @@ const PROJECTS = [
       "Dynamic KPI dashboards with chart-based analytics",
       "Payroll support with bulk period processing",
     ],
-    liveDemoUrl: "https://strbrykeiyk.github.io/FPD_demo/jjcewgsaccess/finance",
+    liveDemoUrl: "https://strbrykeiyk.github.io/FPD_demo/",
+  },
+  {
+    subtitle: "Frontend Development",
+    impact: "Full Supply Chain Coverage",
+    color: "#f08a24",
+    stack: ["React", "TypeScript", "QR/Barcode", "WebSocket", "Axios"],
+    desc: "Procurement and inventory module for supplier management and purchase order workflows with strong process visibility.",
+    highlights: [
+      "QR/barcode generation and scanning for inventory",
+      "Multi-step purchase order creation wizard",
+      "Duplicate detection for inventory integrity",
+      "CSV/Excel import with validation and error reporting",
+    ],
   },
   {
     title: "Doc Automation Service",
@@ -144,7 +157,7 @@ export default function Projects() {
                           tabIndex={
                             activeIndex === index && project.liveDemoUrl
                               ? 0
-                              : -1
+                              : -1  
                           }
                           onKeyDown={(event) =>
                             handleProjectKeyDown(event, project.liveDemoUrl)

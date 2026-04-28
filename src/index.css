@@ -1024,29 +1024,39 @@ opacity: 0.95;
 .project-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
+  gap: 0.5rem;
   width: fit-content;
-  border: 1px solid rgba(37, 87, 42, 0.3);
-  border-radius: 999px;
-  padding: 0.42rem 0.74rem;
-  color: var(--main-strong);
-  background: rgba(37, 87, 42, 0.11);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  color: white;
+  background: linear-gradient(135deg, var(--project-color, var(--main)), var(--accent));
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: transform 0.22s ease, background-color 0.22s ease;
+  box-shadow: 0 4px 12px rgba(37, 87, 42, 0.2);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  cursor: pointer;
 }
 
 .project-link::after {
   content: '↗';
+  font-size: 0.85em;
   transition: transform 0.22s ease;
 }
 
 .project-link-soon {
-  border-style: dashed;
+  border: 1px solid rgba(37, 87, 42, 0.3);
+  border-radius: 999px;
+  padding: 0.42rem 0.74rem;
   color: var(--ink-muted);
   background: rgba(37, 87, 42, 0.06);
+  font-size: 0.66rem;
+  font-weight: 400;
+  box-shadow: none;
   cursor: default;
 }
 
@@ -1056,8 +1066,13 @@ opacity: 0.95;
 
 .project-link:hover,
 .project-link:focus-visible {
-  transform: translateY(-1px);
-  background: rgba(37, 87, 42, 0.16);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 87, 42, 0.3);
+  filter: brightness(1.1);
+}
+
+.project-link:hover::after {
+  transform: translateX(2px);
 }
 
 .project-link:hover::after,
@@ -1686,12 +1701,53 @@ opacity: 0.95;
   }
 }
 
+/* Prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Low-end device optimizations */
+@media (max-width: 768px) and (max-height: 1024px) {
+  /* Disable expensive backdrop-filters on small/low-end devices */
+  .top-nav {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .portfolio-shell::before {
+    will-change: auto;
+    animation: none;
+    opacity: 0.6;
+  }
+
+  body::before,
+  body::after {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* Mac/Safari-specific optimizations */
+@supports (-webkit-appearance: none) {
+  /* Reduce backdrop-filter complexity on webkit browsers (Mac Safari) */
+  @media (prefers-color-scheme: light) {
+    .startup-loader-panel {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .top-nav {
+      backdrop-filter: blur(8px);
+    }
+
+    .portfolio-shell::before {
+      will-change: transform;
+    }
   }
 }
 

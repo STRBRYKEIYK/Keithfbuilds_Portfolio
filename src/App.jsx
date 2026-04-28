@@ -7,21 +7,35 @@ import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import Cursor from './components/Cursor'
+import useDeviceCapabilities from './hooks/useDeviceCapabilities'
 
 const SECTION_IDS = ['hero', 'about', 'skills', 'projects', 'contact']
 
 const isDesktopViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(min-width: 1025px)').matches
 
+const getBootTime = () => {
+  // Reduce boot time on low-end devices and Mac
+  if (typeof window === 'undefined') return 5000
+  const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
+  const cores = navigator.hardwareConcurrency || 4
+  const isLowEnd = cores <= 2
+  
+  if (isLowEnd || isMac) return 2000
+  return 5000
+}
+
 export default function App() {
   const railRef = useRef(null)
   const [activeSection, setActiveSection] = useState('hero')
   const [isBooting, setIsBooting] = useState(true)
+  const { shouldReduceEffects } = useDeviceCapabilities()
 
   useEffect(() => {
+    const bootTime = getBootTime()
     const timeoutId = window.setTimeout(() => {
       setIsBooting(false)
-    }, 5000)
+    }, bootTime)
 
     return () => window.clearTimeout(timeoutId)
   }, [])
