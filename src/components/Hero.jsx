@@ -1,5 +1,7 @@
 import useRevealOnScroll from "../hooks/useRevealOnScroll";
 import SignatureTitle from "./SignatureTitle";
+import LiveTimeChip from "./LiveTimeChip";
+import PipeBracket from "./PipeBracket";
 
 const RESUME_FILE = "KeithFbuilds.dev - Resume.pdf";
 const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`;
@@ -8,108 +10,87 @@ const jumpTo = (event, id) => {
   event.preventDefault();
   document.getElementById(id)?.scrollIntoView({
     behavior: "smooth",
-    inline: "start",
-    block: "nearest",
+    block: "start",
   });
 };
 
 export default function Hero() {
-  const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 110 });
+  const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 90 });
 
   return (
     <section id="hero" className="portfolio-panel hero-panel" ref={sectionRef}>
-      <div className="panel-inner hero-grid">
-        <div>
-          <p className="kicker reveal" data-reveal>
-            Enterprise Systems • Antipolo, Rizal PH • Remote Ready
-          </p>
-
-          <SignatureTitle
-            as="h1"
-            className="hero-title"
-            text="AI-Empowered Full-Stack Developer"
-            spacing="0.18em"
-          />
-
-          <p className="panel-copy reveal" data-reveal>
-            I architect React + TypeScript systems for operations, procurement,
-            and finance, owning the data model, real-time sync, and approval
-            logic. AI copilots accelerate boilerplate, testing, and UI delivery
-            while I stay responsible for the architecture and business rules.
-          </p>
-
-          <div className="hero-actions reveal" data-reveal>
-            <a
-              href="#projects"
-              className="btn btn-primary focus-ring"
-              onClick={(event) => jumpTo(event, "projects")}
-            >
-              View Selected Work
-            </a>
-            <a
-              href="#contact"
-              className="btn btn-ghost focus-ring"
-              onClick={(event) => jumpTo(event, "contact")}
-            >
-              Start a Conversation
-            </a>
-            <a
-              href={RESUME_HREF}
-              download
-              className="btn btn-subtle focus-ring"
-            >
-              Download Resume
-            </a>
-          </div>
+      <div className="panel-inner">
+        <div className="hero-meta-row reveal" data-reveal>
+          <LiveTimeChip />
+          <a
+            href="#contact"
+            className="available-chip focus-ring"
+            onClick={(event) => jumpTo(event, "contact")}
+          >
+            Open to Work →
+          </a>
         </div>
 
-        <aside className="hero-card reveal" data-reveal>
-          <h2>Delivery Snapshot</h2>
+        <div className="hero-stack reveal" data-reveal>
+          <span className="hero-stack-line">WEB SYSTEMS</span>
+          <span className="hero-stack-line">BUILT FOR</span>
+          <span className="hero-stack-line">
+            <PipeBracket>
+              <SignatureTitle as="span" text="enterprise" spacing="0.18em" />
+            </PipeBracket>
+          </span>
+        </div>
 
-          <ul className="resume-list">
-            <li>
-              <span>Primary Stack</span>
-              <strong>React 18 + TypeScript + Tailwind</strong>
-            </li>
-            <li>
-              <span>Signature Systems</span>
-              <strong>1,000+ SKU POS, Procurement, Finance</strong>
-            </li>
-            <li>
-              <span>Delivery Approach</span>
-              <strong>Architect-led, AI-accelerated execution</strong>
-            </li>
-          </ul>
+        <div>
+          <p className="hero-tagline reveal" data-reveal>
+            I architect React + TypeScript systems for operations,
+            procurement, and finance — owning the data model, real-time
+            sync, and approval logic.
+          </p>
 
-          <div className="hero-contact-mini">
-            <a href="mailto:keithfelipe024@gmail.com" className="focus-ring">
-              keithfelipe024@gmail.com
-            </a>
-            <a href="tel:+639216054768" className="focus-ring">
-              +63 921 605 4768
-            </a>
-            <a
-              href="https://github.com/STRBRYKEIYK"
-              target="_blank"
-              rel="noreferrer"
-              className="focus-ring"
-            >
-              github.com/STRBRYKEIYK
-            </a>
+          <p className="three-nouns reveal" data-reveal>
+            Developer<span>·</span>Architect<span>·</span>AI-Native
+          </p>
+        </div>
+
+        <div className="hero-actions-new reveal" data-reveal>
+          <a
+            href="#projects"
+            className="btn-on-dark focus-ring"
+            onClick={(event) => jumpTo(event, "projects")}
+          >
+            View Selected Work →
+          </a>
+          <a
+            href="#contact"
+            className="btn-on-dark btn-on-dark-ghost focus-ring"
+            onClick={(event) => jumpTo(event, "contact")}
+          >
+            Start a Conversation
+          </a>
+          <a
+            href={RESUME_HREF}
+            download
+            className="btn-on-dark btn-on-dark-ghost focus-ring"
+          >
+            Download Resume
+          </a>
+        </div>
+
+        <dl className="delivery-snapshot reveal" data-reveal>
+          <div>
+            <dt>Primary Stack</dt>
+            <dd>React 18 · TypeScript · Tailwind</dd>
           </div>
-        </aside>
-
-        <figure className="hero-art-frame reveal" data-reveal>
-          <img
-            src="/images/art.png"
-            alt="Stylized landscape artwork with mountains and sunset tones"
-            className="hero-art-image"
-            width="1024"
-            height="197"
-            loading="eager"
-            decoding="async"
-          />
-        </figure>
+          <div>
+            <dt>Signature Systems</dt>
+            <dd>1,000+ SKU POS · Procurement · Finance</dd>
+          </div>
+          <div>
+            <dt>Delivery Approach</dt>
+            <dd>Architect-led · AI-accelerated</dd>
+          </div>
+        </dl>
       </div>
     </section>
   );

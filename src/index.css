@@ -7,6 +7,7 @@
 :root {
   --main: #25572a;
   --main-strong: #17391b;
+  --main-darkest: #0c1f10;
   --main-soft: #dceee0;
   --accent: #ce6c2f;
   --accent-strong: #a84f1f;
@@ -16,11 +17,15 @@
   --bg-deep: #f2ede3;
   --ink: #1b281c;
   --ink-muted: #3e513f;
+  --ink-on-dark: #e8f0e6;
+  --ink-on-dark-muted: rgba(232, 240, 230, 0.66);
   --line: #c7d4c7;
+  --line-on-dark: rgba(232, 240, 230, 0.18);
   --shadow: 0 16px 44px rgba(23, 57, 27, 0.11);
   --ring: rgba(37, 87, 42, 0.34);
   --nav-height: 76px;
   --footer-height: 62px;
+  --section-gap: clamp(5rem, 11vw, 10rem);
   --font-sans: 'Space Grotesk', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
@@ -366,46 +371,27 @@ opacity: 0.95;
   background: linear-gradient(140deg, rgba(206, 108, 47, 0.2), rgba(206, 108, 47, 0.08));
 }
 
+/* ---------- Vertical-flow layout (Phase A makeover) ----------
+   Replaced the desktop horizontal scroll rail with a single-column
+   vertical flow. Sections stack with large breathing room. */
+
 .portfolio-rail {
-  height: calc(100vh - var(--nav-height) - var(--footer-height));
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
+  display: block;
   outline: none;
 }
 
 .portfolio-rail:focus-visible {
-  box-shadow: inset 0 0 0 3px var(--ring);
-}
-
-.portfolio-rail::-webkit-scrollbar {
-  height: 12px;
-}
-
-.portfolio-rail::-webkit-scrollbar-track {
-  background: linear-gradient(90deg, rgba(37, 87, 42, 0.08), rgba(206, 108, 47, 0.09));
-  border-radius: 999px;
-}
-
-.portfolio-rail::-webkit-scrollbar-thumb {
-  border: 2px solid rgba(255, 255, 255, 0.75);
-  border-radius: 999px;
-  background: linear-gradient(95deg, rgba(37, 87, 42, 0.85), rgba(206, 108, 47, 0.82));
-  box-shadow: inset 0 0 0 1px rgba(37, 87, 42, 0.16);
-}
-
-.portfolio-rail::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(95deg, rgba(37, 87, 42, 0.95), rgba(206, 108, 47, 0.92));
+  outline: none;
 }
 
 .portfolio-panel {
-  flex: 0 0 100vw;
-  scroll-snap-align: start;
-  overflow-y: auto;
-  padding: clamp(1.8rem, 4.2vw, 3.35rem) clamp(1.05rem, 3.2vw, 3rem);
+  display: block;
+  padding: var(--section-gap) clamp(1.05rem, 3.2vw, 3rem);
+  min-height: auto;
+}
+
+.portfolio-panel:first-child {
+  padding-top: clamp(2rem, 5vw, 4rem);
 }
 
 .portfolio-panel::-webkit-scrollbar {
@@ -2113,4 +2099,249 @@ opacity: 0.95;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* ---------- Phase A: Hero rebuild (dark field + stacked headline) ---------- */
+
+.hero-panel {
+  position: relative;
+  background: var(--main-darkest);
+  color: var(--ink-on-dark);
+  padding: clamp(4rem, 9vw, 8rem) clamp(1.4rem, 4vw, 4rem) clamp(4rem, 8vw, 6rem);
+  min-height: calc(100vh - var(--nav-height));
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(900px circle at 78% 18%, rgba(206, 108, 47, 0.18), transparent 65%),
+    radial-gradient(600px circle at 8% 90%, rgba(37, 87, 42, 0.55), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-panel .panel-inner {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(2.4rem, 5vw, 4rem);
+  min-height: 100%;
+}
+
+.hero-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-on-dark-muted);
+}
+
+.live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--line-on-dark);
+  border-radius: 999px;
+  background: rgba(232, 240, 230, 0.05);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-on-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-chip::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(206, 108, 47, 0.18);
+  animation: livePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(206, 108, 47, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(206, 108, 47, 0.08);
+  }
+}
+
+.available-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid rgba(206, 108, 47, 0.55);
+  border-radius: 999px;
+  background: rgba(206, 108, 47, 0.12);
+  color: var(--accent-soft);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.available-chip:hover,
+.available-chip:focus-visible {
+  background: rgba(206, 108, 47, 0.22);
+  color: #ffe6d4;
+}
+
+.hero-stack {
+  display: grid;
+  gap: 0.1em;
+  font-size: clamp(2.6rem, 9vw, 7rem);
+  font-weight: 500;
+  line-height: 0.94;
+  color: var(--ink-on-dark);
+  letter-spacing: -0.015em;
+}
+
+.hero-stack .signature-title {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.hero-stack-line {
+  display: block;
+}
+
+.pipe-bracket {
+  display: inline-block;
+  color: var(--accent);
+}
+
+.pipe-bracket::before,
+.pipe-bracket::after {
+  content: '|';
+  font-family: var(--font-mono);
+  font-weight: 400;
+  margin: 0 0.12em;
+  opacity: 0.85;
+}
+
+.hero-tagline {
+  max-width: 56ch;
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.65;
+  color: var(--ink-on-dark-muted);
+}
+
+.three-nouns {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-on-dark);
+}
+
+.three-nouns span {
+  color: var(--accent);
+  margin: 0 0.4em;
+}
+
+.hero-actions-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.btn-on-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.3rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: 1px solid var(--ink-on-dark);
+  background: var(--ink-on-dark);
+  color: var(--main-darkest);
+  transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+}
+
+.btn-on-dark:hover,
+.btn-on-dark:focus-visible {
+  transform: translateY(-2px);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-on-dark-ghost {
+  background: transparent;
+  color: var(--ink-on-dark);
+  border-color: var(--line-on-dark);
+}
+
+.btn-on-dark-ghost:hover,
+.btn-on-dark-ghost:focus-visible {
+  background: rgba(232, 240, 230, 0.08);
+  color: var(--ink-on-dark);
+  border-color: var(--ink-on-dark);
+}
+
+.delivery-snapshot {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+  border-top: 1px solid var(--line-on-dark);
+  padding-top: 1.4rem;
+}
+
+.delivery-snapshot dt {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-on-dark-muted);
+  margin-bottom: 0.15rem;
+}
+
+.delivery-snapshot dd {
+  font-size: 0.95rem;
+  color: var(--ink-on-dark);
+  line-height: 1.45;
+}
+
+@media (min-width: 720px) {
+  .delivery-snapshot {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+}
+
+/* Hide the cream/orange decorative blobs from .portfolio-shell while
+   the dark hero is in view; they were tuned for a light field. */
+.portfolio-shell:has(.hero-panel)::before,
+.portfolio-shell:has(.hero-panel)::after {
+  opacity: 0.18;
 }
