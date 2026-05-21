@@ -27,54 +27,48 @@ export default function Hero() {
             className="available-chip focus-ring"
             onClick={(event) => jumpTo(event, "contact")}
           >
-            Open to Work →
+            Available for work →
           </a>
         </div>
 
         <div className="hero-stack reveal" data-reveal>
-          <span className="hero-stack-line">WEB SYSTEMS</span>
-          <span className="hero-stack-line">BUILT FOR</span>
+          <span className="hero-stack-line">ENGINEER</span>
+          <span className="hero-stack-line">ARCHITECT</span>
           <span className="hero-stack-line">
             <PipeBracket>
-              <SignatureTitle as="span" text="enterprise" spacing="0.18em" />
+              <SignatureTitle as="span" text="ai-native" spacing="0.12em" />
             </PipeBracket>
           </span>
         </div>
 
-        <div>
-          <p className="hero-tagline reveal" data-reveal>
+        <div className="hero-content-grid reveal" data-reveal>
+          <p className="hero-tagline">
             I architect React + TypeScript systems for operations,
             procurement, and finance — owning the data model, real-time
             sync, and approval logic.
           </p>
 
-          <p className="three-nouns reveal" data-reveal>
-            Developer<span>·</span>Architect<span>·</span>AI-Native
-          </p>
-        </div>
-
-        <div className="hero-actions-new reveal" data-reveal>
-          <a
-            href="#projects"
-            className="btn-on-dark focus-ring"
-            onClick={(event) => jumpTo(event, "projects")}
-          >
-            View Selected Work →
-          </a>
-          <a
-            href="#contact"
-            className="btn-on-dark btn-on-dark-ghost focus-ring"
-            onClick={(event) => jumpTo(event, "contact")}
-          >
-            Start a Conversation
-          </a>
-          <a
-            href={RESUME_HREF}
-            download
-            className="btn-on-dark btn-on-dark-ghost focus-ring"
-          >
-            Download Resume
-          </a>
+          <div>
+            <p className="three-nouns mb-4">
+              Developer<span>·</span>Architect<span>·</span>AI-Native
+            </p>
+            <div className="hero-actions-new">
+              <a
+                href="#projects"
+                className="btn-on-dark focus-ring"
+                onClick={(event) => jumpTo(event, "projects")}
+              >
+                View Selected Work →
+              </a>
+              <a
+                href={RESUME_HREF}
+                download
+                className="btn-on-dark btn-on-dark-ghost focus-ring"
+              >
+                Download Resume
+              </a>
+            </div>
+          </div>
         </div>
 
         <dl className="delivery-snapshot reveal" data-reveal>

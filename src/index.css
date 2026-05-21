@@ -2209,13 +2209,14 @@ opacity: 0.95;
 }
 
 .hero-stack {
-  display: grid;
-  gap: 0.1em;
-  font-size: clamp(2.6rem, 9vw, 7rem);
-  font-weight: 500;
-  line-height: 0.94;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(3.2rem, 12vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.86;
   color: var(--ink-on-dark);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
 }
 
 .hero-stack .signature-title {
@@ -2239,22 +2240,37 @@ opacity: 0.95;
 .pipe-bracket::after {
   content: '|';
   font-family: var(--font-mono);
-  font-weight: 400;
-  margin: 0 0.12em;
-  opacity: 0.85;
+  font-weight: 300;
+  margin: 0 0.08em;
+  opacity: 0.65;
+}
+
+.hero-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .hero-content-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
 }
 
 .hero-tagline {
-  max-width: 56ch;
-  font-size: clamp(1rem, 1.6vw, 1.18rem);
-  line-height: 1.65;
+  max-width: 50ch;
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 1.6;
   color: var(--ink-on-dark-muted);
 }
 
 .three-nouns {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--ink-on-dark);
 }
