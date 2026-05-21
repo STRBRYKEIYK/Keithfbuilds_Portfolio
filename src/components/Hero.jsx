@@ -1,4 +1,5 @@
 import useRevealOnScroll from "../hooks/useRevealOnScroll";
+import SignatureTitle from "./SignatureTitle";
 
 const RESUME_FILE = "KeithFbuilds.dev - Resume.pdf";
 const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`;
@@ -23,9 +24,12 @@ export default function Hero() {
             Enterprise Systems • Antipolo, Rizal PH • Remote Ready
           </p>
 
-          <h1 className="hero-title reveal" data-reveal>
-            AI-Empowered Full-Stack Developer
-          </h1>
+          <SignatureTitle
+            as="h1"
+            className="hero-title"
+            text="AI-Empowered Full-Stack Developer"
+            spacing="0.18em"
+          />
 
           <p className="panel-copy reveal" data-reveal>
             I architect React + TypeScript systems for operations, procurement,

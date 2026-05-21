@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(claude mcp add firecrawl --scope user --env FIRECRAWL_API_KEY=fc-ac89ee42bdbc4974aa8a8654dddad923 -- npx -y firecrawl-mcp)",
+      "PowerShell(\\(Get-Command firecrawl-mcp -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell(claude mcp add firecrawl --scope user -e FIRECRAWL_API_KEY=fc-ac89ee42bdbc4974aa8a8654dddad923 -- firecrawl-mcp)",
+      "PowerShell(claude mcp add firecrawl --scope user -e FIRECRAWL_API_KEY=fc-ac89ee42bdbc4974aa8a8654dddad923 firecrawl-mcp)",
+      "PowerShell(claude mcp add --help)",
+      "PowerShell(claude --% mcp add firecrawl --scope user -e FIRECRAWL_API_KEY=fc-ac89ee42bdbc4974aa8a8654dddad923 -- firecrawl-mcp)",
+      "Bash(claude mcp *)",
+      "mcp__firecrawl__firecrawl_scrape",
+      "mcp__lean-ctx__ctx_read",
+      "mcp__lean-ctx__ctx_search",
+      "PowerShell(npm install react-router-dom react-helmet-async)",
+      "Bash(npm run *)",
+      "PowerShell(npm uninstall framer-motion)",
+      "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(curl -s -o /dev/null -w \"/project/aether: %{http_code}\\\\n\" http://localhost:5173/project/aether)",
+      "Bash(curl -s -o /dev/null -w \"/project/toolbox: %{http_code}\\\\n\" http://localhost:5173/project/toolbox)",
+      "Bash(curl -s -o /dev/null -w \"/project/financial-workflow: %{http_code}\\\\n\" http://localhost:5173/project/financial-workflow)",
+      "Bash(curl -s -o /dev/null -w \"/project/procurement-supply-chain: %{http_code}\\\\n\" http://localhost:5173/project/procurement-supply-chain)",
+      "Bash(curl -s http://localhost:5173/)"
+    ]
+  }
+}

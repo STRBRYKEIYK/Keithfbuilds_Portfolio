@@ -1824,3 +1824,293 @@ opacity: 0.95;
     transform: translate3d(-14px, 8px, 0);
   }
 }
+
+/* ---------- Case study page (Step 1 of award-tier upgrade) ---------- */
+
+.case-page {
+  width: 100%;
+  min-height: calc(100dvh - var(--nav-height) - var(--footer-height));
+  padding: calc(var(--nav-height) + 2.5rem) clamp(1.25rem, 4vw, 3rem) 3rem;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  overflow-y: auto;
+}
+
+.case-article {
+  max-width: 880px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2.4rem;
+}
+
+.case-header {
+  display: grid;
+  gap: 0.55rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.case-title {
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--main-strong);
+  font-weight: 600;
+}
+
+.case-impact {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--project-color, var(--accent));
+}
+
+.case-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.4rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow);
+}
+
+.case-meta dt {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.3rem;
+}
+
+.case-meta dd {
+  font-size: 0.94rem;
+  color: var(--ink);
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+@media (max-width: 720px) {
+  .case-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.case-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.case-section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.case-section h2 {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--main);
+  font-weight: 500;
+}
+
+.case-section p {
+  font-size: 1.06rem;
+  line-height: 1.72;
+  color: var(--ink);
+  max-width: 65ch;
+}
+
+.case-highlights {
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+  padding-left: 0;
+}
+
+.case-highlights li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.case-highlights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--project-color, var(--main));
+}
+
+.case-credits {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.case-credits li {
+  font-size: 0.92rem;
+  color: var(--ink-muted);
+}
+
+.case-credits a {
+  color: var(--main);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.case-next {
+  margin-top: 1.6rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.6rem;
+}
+
+.case-next a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.case-next a:hover,
+.case-next a:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--main);
+  box-shadow: var(--shadow);
+}
+
+.case-next span {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.case-next strong {
+  font-size: 1.4rem;
+  color: var(--main-strong);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- 404 page ---------- */
+
+.not-found-page {
+  width: 100%;
+  min-height: calc(100dvh - var(--nav-height) - var(--footer-height));
+  display: grid;
+  place-items: center;
+  padding: calc(var(--nav-height) + 1.5rem) 1.5rem 2.5rem;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+}
+
+.not-found-inner {
+  text-align: center;
+  display: grid;
+  gap: 1.1rem;
+  justify-items: center;
+  max-width: 540px;
+}
+
+.not-found-title {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--main-strong);
+  font-weight: 600;
+}
+
+.not-found-copy {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+
+/* ---------- Projects card: new dual-CTA + title link ---------- */
+
+.project-card-title-link {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.28s ease;
+}
+
+.project-card-title-link:hover,
+.project-card-title-link:focus-visible {
+  background-size: 100% 1px;
+}
+
+.project-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.project-link-ghost {
+  background: transparent;
+  color: var(--main-strong);
+  border: 1px solid rgba(37, 87, 42, 0.32);
+  box-shadow: none;
+}
+
+.project-link-ghost:hover,
+.project-link-ghost:focus-visible {
+  background: rgba(37, 87, 42, 0.06);
+  border-color: var(--main);
+  filter: none;
+}
+
+/* ---------- Signature typographic motif (Step 3) ---------- */
+
+.signature-title {
+  display: block;
+  position: relative;
+}
+
+.signature-letter {
+  display: inline-block;
+  will-change: transform, opacity;
+  white-space: pre;
+}
+
+/* ---------- Case cover image (Step 5) ---------- */
+
+.case-cover {
+  width: 100%;
+  margin-bottom: 1.6rem;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--bg-soft), var(--bg-deep));
+}
+
+.case-cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

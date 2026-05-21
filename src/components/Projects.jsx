@@ -1,89 +1,20 @@
+import { Link, useNavigate } from "react-router-dom";
 import useRevealOnScroll from "../hooks/useRevealOnScroll";
 import Carousel from "./ui/Carousel/Carousel";
-
-const PROJECTS = [
-  {
-    title: "AETHER - Real Estate Platform",
-    subtitle: "Full-Stack Web Application",
-    impact: "Dynamic Property Discovery",
-    color: "#0f766e",
-    stack: ["Next.js", "React", "Tailwind CSS", "Framer Motion", "Lucide React", "Relume UI"],
-    desc: "A modern, high-performance real estate web application for showcasing property listings, neighborhood guides, and delivering a seamless experience for homebuyers and renters.",
-    highlights: [
-      "Server-Side Rendering (SSR) and Static Site Generation (SSG) for optimal performance and SEO",
-      "Dynamic property routing with dedicated detail pages and amenity exploration",
-      "Comprehensive neighborhood guides with location insights",
-      "Fully responsive mobile-first design with fluid animations",
-    ],
-    liveDemoUrl: "https://aether.keithfbuilds.dev",
-  },
-  {
-    title: "Toolbox - Inventory & POS System",
-    subtitle: "Full-Stack Development",
-    impact: "1,000+ SKUs Managed",
-    color: "#1f9a67",
-    stack: ["React 18", "TypeScript", "WebSocket", "PWA", "Tailwind"],
-    desc: "A modern point-of-sale and inventory management system for toolbox operations with reliable real-time synchronization.",
-    highlights: [
-      "Barcode scanning + real-time inventory validation",
-      "PWA with full offline functionality via IndexedDB",
-      "Socket.IO multi-session stock synchronization",
-      "Advanced cart with session persistence and recovery",
-    ],
-    liveDemoUrl: "https://toolbox.keithfbuilds.dev",
-  },
-  {
-    subtitle: "Full-Stack Financial Systems",
-    impact: "Complete ERP Module",
-    color: "#1f6f53",
-    stack: ["React", "TypeScript", "State Machine", "Data Analytics"],
-    desc: "Financial workflow platform for vouchers, payroll, billing, loans, and expenses with end-to-end audit coverage.",
-    highlights: [
-      "Multi-level approval states from draft to released",
-      "Three voucher types with complete lifecycle handling",
-      "Dynamic KPI dashboards with chart-based analytics",
-      "Payroll support with bulk period processing",
-    ],
-    liveDemoUrl: "https://strbrykeiyk.github.io/FPD_demo/",
-  },
-  {
-    subtitle: "Frontend Development",
-    impact: "Full Supply Chain Coverage",
-    color: "#f08a24",
-    stack: ["React", "TypeScript", "QR/Barcode", "WebSocket", "Axios"],
-    desc: "Procurement and inventory module for supplier management and purchase order workflows with strong process visibility.",
-    highlights: [
-      "QR/barcode generation and scanning for inventory",
-      "Multi-step purchase order creation wizard",
-      "Duplicate detection for inventory integrity",
-      "CSV/Excel import with validation and error reporting",
-    ],
-  },
-  {
-    title: "Doc Automation Service",
-    subtitle: "Backend Automation and OCR",
-    impact: "Multi-Provider OCR Engine",
-    color: "#2e8c67",
-    stack: ["Express", "TypeScript", "Python", "OCR", "API"],
-    desc: "Document ingestion service for extracting structured data from PDFs, images, and office files across enterprise workflows.",
-    highlights: [
-      "Multi-provider OCR using Tesseract, EasyOCR, and Qwen-VL",
-      "Secure upload endpoints with validation and audit trails",
-      "Support for PDF, Excel, Word, JPEG, PNG and more",
-      "Concurrent processing pipeline for scalable intake",
-    ],
-  },
-];
+import projects from "../content/projects/index.js";
 
 export default function Projects() {
   const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 90 });
+  const navigate = useNavigate();
 
-  const handleProjectKeyDown = (event, url) => {
-    if (!url) return;
+  const goToCase = (slug) => {
+    navigate(`/project/${slug}`);
+  };
+
+  const handleProjectKeyDown = (event, slug) => {
     if (event.key !== "Enter" && event.key !== " ") return;
-
     event.preventDefault();
-    window.open(url, "_blank", "noopener,noreferrer");
+    goToCase(slug);
   };
 
   return (
@@ -103,7 +34,7 @@ export default function Projects() {
         </p>
 
         <Carousel.Root
-          count={PROJECTS.length}
+          count={projects.length}
           initialIndex={0}
           transitionMs={360}
           loop={false}
@@ -145,27 +76,31 @@ export default function Projects() {
                     className="projects-track"
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                   >
-                    {PROJECTS.map((project, index) => (
+                    {projects.map((project, index) => (
                       <div
-                        key={project.title}
+                        key={project.slug}
                         className="projects-slide"
                         aria-hidden={activeIndex !== index}
                       >
                         <article
                           className="project-card focus-ring"
                           style={{ "--project-color": project.color }}
-                          tabIndex={
-                            activeIndex === index && project.liveDemoUrl
-                              ? 0
-                              : -1  
-                          }
+                          tabIndex={activeIndex === index ? 0 : -1}
                           onKeyDown={(event) =>
-                            handleProjectKeyDown(event, project.liveDemoUrl)
+                            handleProjectKeyDown(event, project.slug)
                           }
-                          aria-label={`${project.title} ${project.impact}${project.liveDemoUrl ? ". Press Enter to open live demo." : ""}`}
+                          aria-label={`${project.title} — ${project.impact}. Press Enter to open the case study.`}
                         >
                           <p>{project.impact}</p>
-                          <h3>{project.title}</h3>
+                          <h3>
+                            <Link
+                              to={`/project/${project.slug}`}
+                              className="project-card-title-link focus-ring"
+                              tabIndex={activeIndex === index ? 0 : -1}
+                            >
+                              {project.title}
+                            </Link>
+                          </h3>
                           <p>{project.subtitle}</p>
 
                           <p>{project.desc}</p>
@@ -184,23 +119,35 @@ export default function Projects() {
                             ))}
                           </ul>
 
-                          {project.liveDemoUrl ? (
-                            <a
-                              href={project.liveDemoUrl}
-                              target="_blank"
-                              rel="noreferrer"
+                          <div className="project-card-actions">
+                            <Link
+                              to={`/project/${project.slug}`}
                               className="project-link focus-ring"
+                              tabIndex={activeIndex === index ? 0 : -1}
                             >
-                              Open Live Demo
-                            </a>
-                          ) : (
-                            <span
-                              className="project-link project-link-soon"
-                              aria-label="Live demo coming soon"
-                            >
-                              Demo coming soon
-                            </span>
-                          )}
+                              Read Case Study
+                            </Link>
+
+                            {project.liveDemoUrl ? (
+                              <a
+                                href={project.liveDemoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="project-link project-link-ghost focus-ring"
+                                tabIndex={activeIndex === index ? 0 : -1}
+                                onClick={(event) => event.stopPropagation()}
+                              >
+                                Open Live Demo
+                              </a>
+                            ) : (
+                              <span
+                                className="project-link project-link-soon"
+                                aria-label="Live demo coming soon"
+                              >
+                                Demo coming soon
+                              </span>
+                            )}
+                          </div>
                         </article>
                       </div>
                     ))}
@@ -212,9 +159,9 @@ export default function Projects() {
                   role="tablist"
                   aria-label="Project picker"
                 >
-                  {PROJECTS.map((project, index) => (
+                  {projects.map((project, index) => (
                     <button
-                      key={project.title}
+                      key={project.slug}
                       type="button"
                       className={`project-dot focus-ring ${activeIndex === index ? "active" : ""}`}
                       onClick={() => goTo(index)}
