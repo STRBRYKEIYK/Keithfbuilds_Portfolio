@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useCommandPalette from '../hooks/useCommandPalette'
 
 const NAV_LINKS = [
   { id: 'hero', label: 'Home' },
@@ -7,11 +8,14 @@ const NAV_LINKS = [
   { id: 'projects', label: 'Projects' },
 ]
 
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
+
 export default function Navbar({ activeSection = 'hero', onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const toggleRef = useRef(null)
   const navRef = useRef(null)
   const hadMenuOpenRef = useRef(false)
+  const { openPalette } = useCommandPalette()
 
   useEffect(() => {
     if (menuOpen) {
@@ -106,6 +110,19 @@ export default function Navbar({ activeSection = 'hero', onNavigate }) {
             {link.label}
           </a>
         ))}
+
+        <button
+          type="button"
+          className="cmdk-trigger focus-ring"
+          onClick={() => {
+            openPalette()
+            setMenuOpen(false)
+          }}
+          aria-label="Open command palette"
+        >
+          <span>Search</span>
+          <span className="cmdk-trigger-key" aria-hidden="true">{isMac ? '⌘K' : 'Ctrl K'}</span>
+        </button>
 
         <a
           href="#contact"

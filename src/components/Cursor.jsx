@@ -85,41 +85,42 @@ export default function Cursor() {
           position: fixed;
           top: 0; left: 0;
           width: 7px; height: 7px;
-          background: var(--main-strong);
-          border: 1px solid rgba(255, 255, 255, 0.55);
+          background: var(--ink);
+          border: 1px solid rgba(245, 242, 234, 0.6);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99999;
           will-change: transform;
           transition: width 0.22s ease, height 0.22s ease, background 0.22s ease, border-color 0.22s ease;
-          box-shadow: 0 0 0 4px rgba(37, 87, 42, 0.08);
+          box-shadow: 0 0 0 4px rgba(17, 17, 15, 0.08);
         }
         .cursor-ring {
           position: fixed;
           top: 0; left: 0;
           width: 34px; height: 34px;
-          border: 1px solid rgba(37, 87, 42, 0.38);
+          border: 1px solid rgba(17, 17, 15, 0.45);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99998;
           will-change: transform;
           transition: width 0.24s ease, height 0.24s ease, border-color 0.24s ease, background 0.24s ease;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(17, 17, 15, 0.04);
           backdrop-filter: blur(2px);
         }
         .cursor-dot.hovered {
-          width: 9px; height: 9px;
-          background: var(--accent);
-          border-color: rgba(255, 255, 255, 0.7);
+          width: 10px; height: 10px;
+          background: var(--riso-red);
+          border-color: rgba(16, 16, 16, 0.85);
         }
         .cursor-ring.hovered {
-          width: 48px; height: 48px;
-          border-color: rgba(206, 108, 47, 0.62);
-          background: rgba(206, 108, 47, 0.08);
+          width: 52px; height: 52px;
+          border-color: var(--riso-cyan);
+          background: rgba(26, 208, 212, 0.16);
+          mix-blend-mode: multiply;
         }
         .cursor-dot.clicked {
-          background: #ffffff;
-          border-color: rgba(37, 87, 42, 0.25);
+          background: var(--canary);
+          border-color: rgba(16, 16, 16, 0.6);
         }
       `}</style>
       <div ref={dotRef} className={`cursor-dot ${hovered ? 'hovered' : ''} ${clicked ? 'clicked' : ''}`} />

@@ -9,6 +9,9 @@ export default function SignatureTitle({
   spacing = '0.32em',
   className = '',
   style: styleProp,
+  misregister = true,
+  misregisterColor = 'red',
+  ...rest
 }) {
   const rootRef = useRef(null)
   const prefersReducedMotion = usePrefersReducedMotion()
@@ -44,24 +47,35 @@ export default function SignatureTitle({
   if (!text) return null
 
   const characters = Array.from(text)
+  const ghostClass = misregisterColor === 'cyan' ? 'signature-ghost-cyan' : 'signature-ghost-red'
 
   return (
     <Tag
       ref={rootRef}
       className={`signature-title ${className}`.trim()}
+      {...rest}
       style={{
         letterSpacing: skipAnimation ? spacing : '0em',
         ...(styleProp || {}),
       }}
       aria-label={text}
     >
+      {misregister && (
+        <span className={`signature-ghost ${ghostClass}`} aria-hidden="true">
+          {characters.map((char, i) => (
+            <span key={`g-${i}`} className="signature-letter-ghost">
+              {char === ' ' ? ' ' : char}
+            </span>
+          ))}
+        </span>
+      )}
       {characters.map((char, i) => (
         <span
           key={`${char}-${i}`}
           className="signature-letter"
           aria-hidden="true"
         >
-          {char === ' ' ? ' ' : char}
+          {char === ' ' ? ' ' : char}
         </span>
       ))}
     </Tag>

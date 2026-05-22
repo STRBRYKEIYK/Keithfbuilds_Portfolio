@@ -1,4 +1,6 @@
 import useRevealOnScroll from "../hooks/useRevealOnScroll";
+import SignatureTitle from "./SignatureTitle";
+import TiltCard from "./TiltCard";
 
 const TIMELINE = [
   {
@@ -22,11 +24,11 @@ const TIMELINE = [
 ];
 
 const STRENGTHS = [
-  "Real-time synchronization",
-  "Offline-first PWA flows",
+  "Real-time sync",
+  "Offline-first PWA",
   "Multi-level approvals",
   "Financial dashboards",
-  "Barcode and QR integration",
+  "Barcode & QR",
   "Workflow automation",
 ];
 
@@ -41,16 +43,26 @@ export default function About() {
             About
           </p>
 
-          <h2 className="panel-title reveal" data-reveal>
-            Architect-led delivery shaped by real business constraints.
-          </h2>
+          <SignatureTitle
+            as="h2"
+            className="panel-title reveal"
+            text="Operating principle"
+            spacing="0.18em"
+            misregisterColor="cyan"
+            data-reveal
+          />
 
           <p className="panel-copy reveal" data-reveal>
             Full-stack developer specializing in React and TypeScript, focused
             on enterprise operations. I architect system structure, data
             contracts, and real-time sync logic, then leverage AI copilots
-            (Claude, Gemini) to accelerate boilerplate, UI implementation, and
-            tests while keeping the core logic under tight control.
+            to accelerate boilerplate, UI implementation, and tests while
+            keeping core logic under tight control.
+          </p>
+
+          <p className="about-callout reveal" data-reveal>
+            I build systems where latency, approvals, and data trust decide
+            revenue and retention.
           </p>
 
           <p className="panel-copy reveal" data-reveal>
@@ -71,14 +83,21 @@ export default function About() {
           </div>
         </div>
 
-        <div className="about-timeline reveal" data-reveal>
-          {TIMELINE.map((item) => (
-            <article key={item.title} className="timeline-item">
-              <p>{item.period}</p>
-              <h3>{item.title}</h3>
-              <p>{item.detail}</p>
-            </article>
-          ))}
+        <div className="about-sticky reveal" data-reveal>
+          <div className="about-timeline">
+            {TIMELINE.map((item, i) => (
+              <TiltCard
+                as="article"
+                key={item.title}
+                className="timeline-item"
+                maxDeg={i === 0 ? 5 : 4}
+              >
+                <p>{item.period}</p>
+                <h3>{item.title}</h3>
+                <p>{item.detail}</p>
+              </TiltCard>
+            ))}
+          </div>
         </div>
       </div>
     </section>

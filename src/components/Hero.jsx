@@ -2,6 +2,8 @@ import useRevealOnScroll from "../hooks/useRevealOnScroll";
 import SignatureTitle from "./SignatureTitle";
 import LiveTimeChip from "./LiveTimeChip";
 import PipeBracket from "./PipeBracket";
+import MagneticButton from "./MagneticButton";
+import RisoFrame from "./RisoFrame";
 
 const RESUME_FILE = "KeithFbuilds.dev - Resume.pdf";
 const RESUME_HREF = `/${encodeURIComponent(RESUME_FILE)}`;
@@ -19,7 +21,7 @@ export default function Hero() {
 
   return (
     <section id="hero" className="portfolio-panel hero-panel" ref={sectionRef}>
-      <div className="panel-inner">
+      <div className="panel-inner hero-shell">
         <div className="hero-meta-row reveal" data-reveal>
           <LiveTimeChip />
           <a
@@ -27,64 +29,84 @@ export default function Hero() {
             className="available-chip focus-ring"
             onClick={(event) => jumpTo(event, "contact")}
           >
-            Available for work →
+            Available for work -&gt;
           </a>
         </div>
 
-        <div className="hero-stack reveal" data-reveal>
-          <span className="hero-stack-line">ENGINEER</span>
-          <span className="hero-stack-line">ARCHITECT</span>
-          <span className="hero-stack-line">
-            <PipeBracket>
-              <SignatureTitle as="span" text="ai-native" spacing="0.12em" />
-            </PipeBracket>
-          </span>
-        </div>
+        <div className="hero-header reveal" data-reveal>
+          <p className="hero-eyebrow">Portfolio 2026 · Keith Wilhelm Felipe</p>
 
-        <div className="hero-content-grid reveal" data-reveal>
-          <p className="hero-tagline">
-            I architect React + TypeScript systems for operations,
-            procurement, and finance — owning the data model, real-time
-            sync, and approval logic.
+          <div className="hero-wordmark-stack" aria-label="Full-stack engineer">
+            <SignatureTitle as="span" text="FULL" misregisterColor="red" spacing="0.04em" />
+            <SignatureTitle as="span" text="STACK" misregisterColor="cyan" spacing="0.04em" />
+            <SignatureTitle as="span" text="ENGINEER" misregisterColor="red" spacing="0.04em" />
+          </div>
+
+          <p className="hero-three-nouns-stack">
+            <strong>Developer</strong> · Architect · AI-native operator
           </p>
 
-          <div>
-            <p className="three-nouns mb-4">
-              Developer<span>·</span>Architect<span>·</span>AI-Native
-            </p>
-            <div className="hero-actions-new">
-              <a
-                href="#projects"
-                className="btn-on-dark focus-ring"
-                onClick={(event) => jumpTo(event, "projects")}
-              >
-                View Selected Work →
-              </a>
-              <a
-                href={RESUME_HREF}
-                download
-                className="btn-on-dark btn-on-dark-ghost focus-ring"
-              >
-                Download Resume
-              </a>
+          <p className="hero-subtitle">
+            <PipeBracket>AI native systems</PipeBracket> for procurement,
+            finance, and inventory teams that run every day.
+          </p>
+        </div>
+
+        <div className="hero-asym-grid reveal" data-reveal>
+          <p className="hero-tagline">
+            I design and ship React + TypeScript platforms with real-time data,
+            audit-ready workflows, and interfaces that never slow a team down.
+          </p>
+
+          <RisoFrame as="dl" className="hero-cards" colors={['red', 'cyan']}>
+            <div>
+              <dt>Focus</dt>
+              <dd>Operational web apps and critical data flows.</dd>
             </div>
+            <div>
+              <dt>Systems</dt>
+              <dd>POS, procurement, finance, document automation.</dd>
+            </div>
+            <div>
+              <dt>Delivery</dt>
+              <dd>Architect-led, AI-assisted, shipped fast.</dd>
+            </div>
+          </RisoFrame>
+        </div>
+
+        <div className="hero-actions-block reveal" data-reveal>
+          <div className="hero-actions-new">
+            <MagneticButton
+              as="a"
+              href="#projects"
+              className="btn-on-dark focus-ring"
+              onClick={(event) => jumpTo(event, "projects")}
+            >
+              View Selected Work -&gt;
+            </MagneticButton>
+            <MagneticButton
+              as="a"
+              href={RESUME_HREF}
+              download
+              className="btn-on-dark btn-on-dark-ghost focus-ring"
+            >
+              Download Resume
+            </MagneticButton>
           </div>
         </div>
 
-        <dl className="delivery-snapshot reveal" data-reveal>
-          <div>
-            <dt>Primary Stack</dt>
-            <dd>React 18 · TypeScript · Tailwind</dd>
+        <div className="hero-ticker" aria-hidden="true">
+          <div className="hero-ticker-track">
+            <span>
+              Operational systems / realtime data / AI native workflows /
+              finance automation / procurement ops /
+            </span>
+            <span>
+              Operational systems / realtime data / AI native workflows /
+              finance automation / procurement ops /
+            </span>
           </div>
-          <div>
-            <dt>Signature Systems</dt>
-            <dd>1,000+ SKU POS · Procurement · Finance</dd>
-          </div>
-          <div>
-            <dt>Delivery Approach</dt>
-            <dd>Architect-led · AI-accelerated</dd>
-          </div>
-        </dl>
+        </div>
       </div>
     </section>
   );

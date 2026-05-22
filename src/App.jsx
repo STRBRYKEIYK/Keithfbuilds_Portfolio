@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Cursor from './components/Cursor'
+import { CommandPaletteProvider } from './hooks/useCommandPalette'
 import { router } from './router.jsx'
 
 const getBootTime = () => {
@@ -93,13 +94,15 @@ export default function App() {
 
   return (
     <HelmetProvider>
-      <Cursor />
+      <CommandPaletteProvider>
+        <Cursor />
 
-      <a className="skip-link focus-ring" href="#main-content">
-        Skip to content
-      </a>
+        <a className="skip-link focus-ring" href="#main-content">
+          Skip to content
+        </a>
 
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
+      </CommandPaletteProvider>
     </HelmetProvider>
   )
 }

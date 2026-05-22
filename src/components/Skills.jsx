@@ -1,14 +1,24 @@
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import SignatureTitle from './SignatureTitle'
+import TiltCard from './TiltCard'
 
-const SKILL_METERS = [
-  { name: 'React 18', level: 95 },
-  { name: 'TypeScript', level: 88 },
-  { name: 'Tailwind CSS', level: 92 },
-  { name: 'REST API Integration', level: 90 },
-  { name: 'WebSocket / Socket.IO', level: 85 },
-  { name: 'Node.js', level: 78 },
-  { name: 'PWA / Offline-First', level: 82 },
-  { name: 'Git / GitHub', level: 90 },
+const SKILLS = [
+  'React 18',
+  'TypeScript',
+  'Tailwind CSS',
+  'REST APIs',
+  'WebSocket',
+  'Socket.IO',
+  'Node.js',
+  'PWA / Offline-First',
+  'Git / GitHub',
+  'GSAP',
+  'Lenis',
+  'Vite',
+  'Postgres',
+  'Supabase',
+  'Cloudflare',
+  'Vercel',
 ]
 
 const SPECIALIZATIONS = [
@@ -49,37 +59,42 @@ export default function Skills() {
             Skills
           </p>
 
-          <h2 className="panel-title reveal" data-reveal>
-            Technical depth built for real operations.
-          </h2>
+          <SignatureTitle
+            as="h2"
+            className="panel-title reveal"
+            text="Technical range"
+            spacing="0.18em"
+            misregisterColor="red"
+            data-reveal
+          />
 
           <p className="panel-copy reveal" data-reveal>
             My strongest delivery area is the React + TypeScript ecosystem, with attention to data
             quality, workflow clarity, and performance under business-critical usage.
           </p>
 
-          <div className="skill-meter-list reveal" data-reveal>
-            {SKILL_METERS.map((skill) => (
-              <div key={skill.name} className="skill-meter">
-                <div>
-                  <strong>{skill.name}</strong>
-                  <span>{skill.level}%</span>
-                </div>
-                <div className="meter-track" aria-hidden="true">
-                  <div className="meter-fill" style={{ width: `${skill.level}%` }} />
-                </div>
-              </div>
-            ))}
+          <p className="skills-callout reveal" data-reveal>
+            Built for systems that stay reliable when traffic spikes and teams ship fast.
+          </p>
+
+          <div className="skills-marquee reveal" data-reveal aria-label="Skill stack">
+            <div className="skills-marquee-track">
+              {[...SKILLS, ...SKILLS].map((skill, i) => (
+                <span key={`${skill}-${i}`} className="skills-marquee-chip">
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="spec-grid reveal" data-reveal>
           {SPECIALIZATIONS.map((item) => (
-            <article key={item.title} className="spec-card">
+            <TiltCard as="article" key={item.title} className="spec-card" maxDeg={5}>
               <p>{item.stat}</p>
               <h3>{item.title}</h3>
               <p>{item.summary}</p>
-            </article>
+            </TiltCard>
           ))}
         </div>
       </div>

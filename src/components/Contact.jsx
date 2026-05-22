@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import { FaCheckCircle } from 'react-icons/fa'
+import SignatureTitle from './SignatureTitle'
+import MagneticButton from './MagneticButton'
 
 const CONTACT_LINKS = [
   {
@@ -97,13 +99,23 @@ export default function Contact() {
             Contact
           </p>
 
-          <h2 className="panel-title reveal" data-reveal>
-            Let&apos;s build something useful and reliable.
-          </h2>
+          <SignatureTitle
+            as="h2"
+            className="panel-title reveal"
+            text="Open to build"
+            spacing="0.18em"
+            misregisterColor="cyan"
+            data-reveal
+          />
 
           <p className="panel-copy reveal" data-reveal>
-            Open to full-time remote roles, long-term collaborations, and product-focused freelance
-            engagements.
+            Open to full-time remote roles, long-term collaborations, and
+            product-focused freelance engagements.
+          </p>
+
+          <p className="contact-callout reveal" data-reveal>
+            If you need a system that can handle approvals, real-time sync, and
+            audit-grade data, I can help.
           </p>
 
           <div className="contact-list reveal" data-reveal>
@@ -187,9 +199,15 @@ export default function Contact() {
                 }
               />
 
-              <button type="submit" className="btn btn-primary" disabled={sending}>
-                {sending ? 'Sending...' : 'Send Message'}
-              </button>
+              <MagneticButton
+                type="submit"
+                className="btn btn-primary"
+                disabled={sending}
+                radius={160}
+                strength={0.4}
+              >
+                {sending ? 'Sending…' : 'Send Message →'}
+              </MagneticButton>
             </form>
           )}
         </div>

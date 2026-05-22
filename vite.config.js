@@ -113,5 +113,17 @@ export default defineConfig(({ mode }) => {
       netlifyFunctionDevBridge(),
       productionObfuscationPlugin(),
     ],
+    server: {
+      host: 'localhost',
+      strictPort: false,
+      hmr: {
+        // Pin HMR to the same port the page is served from so Firefox
+        // doesn't try to upgrade against a stale/wrong port after
+        // the dev server picks a different one (5173 → 5174 → …).
+        clientPort: undefined,
+        host: 'localhost',
+        protocol: 'ws',
+      },
+    },
   }
 })
