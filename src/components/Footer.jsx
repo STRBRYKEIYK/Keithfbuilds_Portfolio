@@ -1,5 +1,3 @@
-import AmbientAudioToggle from './AmbientAudioToggle'
-
 export default function Footer({ onNavigate }) {
   const backToStart = (event) => {
     event.preventDefault()
@@ -16,7 +14,6 @@ export default function Footer({ onNavigate }) {
       <p>© {new Date().getFullYear()} Built with React + Vite</p>
 
       <div className="footer-links">
-        <AmbientAudioToggle />
         <a href="mailto:keithfelipe024@gmail.com" className="focus-ring">
           Email
         </a>

@@ -8,17 +8,26 @@ import Projects from '../components/Projects'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
+import AmbientAudioToggle from '../components/AmbientAudioToggle'
+import useCommandPalette from '../hooks/useCommandPalette'
 import useLenis from '../hooks/useLenis'
 
 const SECTION_IDS = ['hero', 'about', 'skills', 'projects', 'contact']
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('hero')
+  const [isTransitioning, setIsTransitioning] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
   const railRef = useRef(null)
+  const { openPalette } = useCommandPalette()
 
   useLenis()
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsTransitioning(false), 400)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const scrollToSection = useCallback((id) => {
     const target = document.getElementById(id)
@@ -52,41 +61,52 @@ export default function Home() {
     const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(Boolean)
     if (!sections.length) return
 
-    let frame = 0
+    if (!rail) return
 
-    const update = () => {
-      const railRect = rail?.getBoundingClientRect()
-      const marker = railRect ? railRect.top + (rail?.clientHeight ?? window.innerHeight) * 0.3 : window.innerHeight * 0.3
-      let active = sections[0].id
-      for (const section of sections) {
-        const rect = section.getBoundingClientRect()
-        if (rect.top <= marker) {
-          active = section.id
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          const id = entry.target.id
+          setActiveSection((prev) => (prev === id ? prev : id))
         }
+      },
+      {
+        root: rail,
+        threshold: 0,
+        rootMargin: '-30% 0px -69% 0px',
       }
-      setActiveSection((prev) => (prev === active ? prev : active))
-    }
+    )
 
-    const onScroll = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(update)
-    }
-
-    update()
-
-    rail?.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
+    sections.forEach((section) => observer.observe(section))
 
     return () => {
-      cancelAnimationFrame(frame)
-      rail?.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
+      observer.disconnect()
     }
   }, [])
 
   return (
     <div className="portfolio-shell">
       <SEO path="/" />
+
+      <div className="home-system-controls" aria-label="System controls">
+        <AmbientAudioToggle />
+
+        <button type="button" className="cmdk-trigger focus-ring" onClick={openPalette}>
+          Menu <span className="cmdk-trigger-key">⌘K</span>
+        </button>
+      </div>
+
+      <div className={`scene-shutter ${isTransitioning ? 'entering' : 'leaving'}`} aria-hidden="true">
+        <div
+          className="scene-shutter-panel scene-shutter-panel-red"
+          style={{ transition: 'transform 480ms cubic-bezier(0.2, 0.9, 0.2, 1)' }}
+        />
+        <div
+          className="scene-shutter-panel scene-shutter-panel-cyan"
+          style={{ transition: 'transform 480ms cubic-bezier(0.2, 0.9, 0.2, 1) 60ms' }}
+        />
+      </div>
 
       <Navbar activeSection={activeSection} onNavigate={handleNavigate} />
 

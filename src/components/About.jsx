@@ -24,11 +24,11 @@ const TIMELINE = [
 ];
 
 const STRENGTHS = [
-  "Real-time sync",
+  "React & Next.js",
+  "Node & PHP",
   "Offline-first PWA",
   "Multi-level approvals",
   "Financial dashboards",
-  "Barcode & QR",
   "Workflow automation",
 ];
 
@@ -38,26 +38,27 @@ export default function About() {
   return (
     <section id="about" className="portfolio-panel" ref={sectionRef}>
       <div className="panel-inner about-grid">
-        <div>
+        <div className="about-copy-stack">
           <p className="kicker reveal" data-reveal>
             About
           </p>
 
           <SignatureTitle
             as="h2"
-            className="panel-title reveal"
+            className="panel-title about-title reveal"
             text="Operating principle"
-            spacing="0.18em"
-            misregisterColor="cyan"
+            spacing="0.06em"
+            misregisterColor="red"
             data-reveal
           />
 
           <p className="panel-copy reveal" data-reveal>
-            Full-stack developer specializing in React and TypeScript, focused
-            on enterprise operations. I architect system structure, data
-            contracts, and real-time sync logic, then leverage AI copilots
-            to accelerate boilerplate, UI implementation, and tests while
-            keeping core logic under tight control.
+            Full-stack developer specializing in React, Next.js, and TypeScript,
+            focused on enterprise operations. I architect system structure,
+            data contracts, and real-time sync logic, then leverage Claude and
+            GitHub Copilot for "vibe coding"-accelerating boilerplate, UI
+            implementation, and tests while keeping core logic under tight
+            control.
           </p>
 
           <p className="about-callout reveal" data-reveal>
@@ -70,13 +71,13 @@ export default function About() {
             field workflows, complex financial dashboards, multi-level approval
             systems, and document ingestion pipelines. I aim for premium,
             audit-ready experiences that ship fast without sacrificing
-            reliability, often cutting timelines in half. BSIT graduate based in
-            the Philippines.
+            reliability, often cutting timelines in half. BSIT graduate from
+            ICCT Colleges.
           </p>
 
           <div className="chip-list reveal" data-reveal>
             {STRENGTHS.map((item) => (
-              <span key={item} className="chip">
+              <span key={item} className="chip magnetic">
                 {item}
               </span>
             ))}
@@ -85,12 +86,16 @@ export default function About() {
 
         <div className="about-sticky reveal" data-reveal>
           <div className="about-timeline">
+            <div className="riso-stamp about-stamp reveal" data-reveal>
+              Antipolo Based
+            </div>
+
             {TIMELINE.map((item, i) => (
               <TiltCard
                 as="article"
                 key={item.title}
                 className="timeline-item"
-                maxDeg={i === 0 ? 5 : 4}
+                maxDeg={i === 0 ? 4 : 2}
               >
                 <p>{item.period}</p>
                 <h3>{item.title}</h3>
