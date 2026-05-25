@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
@@ -16,6 +16,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('hero')
   const location = useLocation()
   const navigate = useNavigate()
+  const railRef = useRef(null)
 
   useLenis()
 
@@ -47,13 +48,15 @@ export default function Home() {
 
   // Vertical scrollspy: highlight the section whose top crossed ~30% of viewport.
   useEffect(() => {
+    const rail = railRef.current
     const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(Boolean)
     if (!sections.length) return
 
     let frame = 0
 
     const update = () => {
-      const marker = window.innerHeight * 0.3
+      const railRect = rail?.getBoundingClientRect()
+      const marker = railRect ? railRect.top + (rail?.clientHeight ?? window.innerHeight) * 0.3 : window.innerHeight * 0.3
       let active = sections[0].id
       for (const section of sections) {
         const rect = section.getBoundingClientRect()
@@ -71,12 +74,12 @@ export default function Home() {
 
     update()
 
-    window.addEventListener('scroll', onScroll, { passive: true })
+    rail?.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
 
     return () => {
       cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', onScroll)
+      rail?.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
   }, [])
@@ -91,6 +94,7 @@ export default function Home() {
         id="main-content"
         className="portfolio-rail"
         aria-label="Portfolio sections"
+        ref={railRef}
       >
         <Hero />
         <About />

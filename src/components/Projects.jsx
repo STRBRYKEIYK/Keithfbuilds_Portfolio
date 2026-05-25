@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import useRevealOnScroll from "../hooks/useRevealOnScroll";
-import useDraggableRail from "../hooks/useDraggableRail";
 import CoverImage from "./CoverImage";
 import ProjectVideoPlaceholder from "./Projects/ProjectVideoPlaceholder";
 import TiltCard from "./TiltCard";
@@ -12,10 +11,14 @@ import projects from "../content/projects/index.js";
 
 export default function Projects() {
   const sectionRef = useRevealOnScroll({ threshold: 0.2, staggerMs: 90 });
-  const { ref: railRef, scrollBy } = useDraggableRail();
   const [activeSlug, setActiveSlug] = useState(projects[0]?.slug ?? "");
   const activeProject =
     projects.find((project) => project.slug === activeSlug) || projects[0];
+
+  const activeIndex = Math.max(
+    0,
+    projects.findIndex((project) => project.slug === activeProject?.slug)
+  );
 
   return (
     <section id="projects" className="portfolio-panel" ref={sectionRef}>
@@ -31,82 +34,64 @@ export default function Projects() {
           />
           <p className="panel-copy">
             A focused index of delivery work where reliability, speed, and data
-            integrity all mattered at once. Drag the rail to browse · Click to
-            open the case study.
+            integrity all mattered at once. Hover, tap, or arrow through the
+            menu to swap the preview.
           </p>
         </div>
 
         <div className="projects-grid reveal" data-reveal>
-          <div className="projects-rail-wrap" style={{ position: "relative" }}>
-            <button
-              type="button"
-              className="draggable-rail-chevron prev focus-ring"
-              onClick={() => scrollBy(-320)}
-              aria-label="Scroll project list left"
-            >
-              ←
-            </button>
+          <aside className="projects-menu" aria-label="Project menu">
+            <div className="projects-menu-header">
+              <p className="projects-menu-title">Game Menu</p>
+              <p className="projects-menu-hint">Select a project to preview it.</p>
+            </div>
 
-            <div
-              className="projects-list draggable-rail"
-              role="listbox"
-              aria-label="Project index"
-              ref={railRef}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "0.6rem",
-                padding: "0.4rem 0.2rem",
-              }}
-            >
+            <div className="projects-list" role="listbox" aria-label="Project index">
               {projects.map((project, index) => (
-                <Link
+                <button
                   key={project.slug}
-                  to={`/project/${project.slug}`}
+                  type="button"
                   className={`project-row focus-ring ${activeSlug === project.slug ? "active" : ""}`}
                   onMouseEnter={() => setActiveSlug(project.slug)}
                   onFocus={() => setActiveSlug(project.slug)}
+                  onClick={() => setActiveSlug(project.slug)}
                   role="option"
                   aria-selected={activeSlug === project.slug}
-                  style={{ flex: "0 0 220px", scrollSnapAlign: "start" }}
                 >
-                  <span className="project-row-index">
+                  <span className="project-row-index" aria-hidden="true">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="project-row-title">{project.title}</span>
-                  <span className="project-row-subtitle">{project.subtitle}</span>
-                  <span className="project-row-impact">{project.impact}</span>
-                </Link>
+                  <span className="project-row-body">
+                    <span className="project-row-title">{project.title}</span>
+                    <span className="project-row-subtitle">{project.subtitle}</span>
+                    <span className="project-row-impact">{project.impact}</span>
+                  </span>
+                  <span className="project-row-arrow" aria-hidden="true">
+                    {activeSlug === project.slug ? "▸" : "↗"}
+                  </span>
+                </button>
               ))}
             </div>
 
-            <button
-              type="button"
-              className="draggable-rail-chevron next focus-ring"
-              onClick={() => scrollBy(320)}
-              aria-label="Scroll project list right"
-            >
-              →
-            </button>
-          </div>
+          </aside>
 
           <div className="projects-preview" aria-live="polite">
             {activeProject ? (
-              <>
+              <div key={activeProject.slug} className="projects-preview-surface">
                 <TiltCard className="projects-preview-media" maxDeg={6}>
                   <RisoFrame colors={['red', 'cyan']}>
                     <span
                       className="riso-stamp"
                       aria-hidden="true"
                     >
-                      № {String(projects.findIndex((p) => p.slug === activeProject.slug) + 1).padStart(2, "0")}
+                      № {String(activeIndex + 1).padStart(2, "0")}
                     </span>
                     {activeProject.cover ? (
                       <CoverImage
                         cover={activeProject.cover}
                         eager
                         className="projects-preview-image"
-                        sizes="(min-width: 1024px) 520px, 100vw"
+                        sizes="(min-width: 1024px) 42vw, 100vw"
                       />
                     ) : (
                       <ProjectVideoPlaceholder
@@ -126,13 +111,36 @@ export default function Projects() {
                   </p>
                   <p className="projects-preview-copy">{activeProject.desc}</p>
 
+                  <dl className="projects-preview-meta">
+                    <div>
+                      <dt>Client</dt>
+                      <dd>{activeProject.client}</dd>
+                    </div>
+                    <div>
+                      <dt>Year</dt>
+                      <dd>{activeProject.year}</dd>
+                    </div>
+                    <div>
+                      <dt>Role</dt>
+                      <dd>{activeProject.role}</dd>
+                    </div>
+                  </dl>
+
                   <div className="project-stack">
-                    {activeProject.stack.map((item) => (
+                    {activeProject.stack.slice(0, 6).map((item) => (
                       <span key={item} className="tag">
                         {item}
                       </span>
                     ))}
                   </div>
+
+                  {activeProject.highlights?.length ? (
+                    <ul className="projects-preview-highlights">
+                      {activeProject.highlights.slice(0, 3).map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : null}
 
                   <div className="project-card-actions">
                     <MagneticButton
@@ -163,7 +171,7 @@ export default function Projects() {
                     )}
                   </div>
                 </div>
-              </>
+              </div>
             ) : null}
           </div>
         </div>
